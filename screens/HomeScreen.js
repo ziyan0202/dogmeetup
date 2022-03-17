@@ -4,6 +4,10 @@ import { auth, getPosts } from "../firebase";
 import { NavigationContainer } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/core";
 import { StatusBar } from "expo-status-bar";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import Explore from "./Explore";
+import Saved from "./Saved";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -16,6 +20,15 @@ const HomeScreen = () => {
       })
       .catch((error) => alert(error.message));
   };
+  const Tab = createBottomTabNavigator();
+  function MyTabs() {
+    return (
+      <Tab.Navigator>
+        <Tab.Screen name="EXPLORE" component={EXPLORE} />
+        <Tab.Screen name="SAVED" component={SAVED} />
+      </Tab.Navigator>
+    );
+  }
   const _getPosts = async () => {
     const posts = await getPosts();
     console.log("POSTS", posts);
@@ -23,6 +36,7 @@ const HomeScreen = () => {
   };
   useEffect(() => {
     _getPosts();
+    console.log(posts);
   }, []);
   return (
     <View style={styles.container}>
@@ -40,7 +54,26 @@ const HomeScreen = () => {
     </View>
   );
 };
-
+// const createBottomTabNavigator({
+//   Explore: {
+//     screen: Explore,
+//     navigationOption: {
+//       tabBarLabel: "EXPLORE",
+//       tabBarIcon: ({ tintColor }) => (
+//         <Icon name="ios-search-outline" color={tintColor} size={24} />
+//       ),
+//     },
+//   },
+//   Saved: {
+//     screen: Saved,
+//     navigationOption: {
+//       tabBarLabel: "EXPLORE",
+//       tabBarIcon: ({ tintColor }) => (
+//         <Icon name="ios-heart-outline" color={tintColor} size={24} />
+//       ),
+//     },
+//   },
+// });
 export default HomeScreen;
 
 const styles = StyleSheet.create({

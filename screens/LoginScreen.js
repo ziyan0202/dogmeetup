@@ -10,6 +10,7 @@ import React, { useEffect, useState } from "react";
 import { auth } from "../firebase";
 import { NavigationContainer } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/core";
+import { Image } from "react-native";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -45,6 +46,10 @@ const LoginScreen = () => {
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <View style={styles.inputContainer}>
+        <Image
+          style={styles.Image}
+          source={require("../images/dogmeetuplogo.jpeg")}
+        />
         <TextInput
           placeholder="Email"
           value={email}
@@ -120,5 +125,10 @@ const styles = StyleSheet.create({
     color: "#0782F9",
     fontWeight: "700",
     fontSize: 16,
+  },
+  Image: {
+    width: "100%",
+    padding: 0,
+    resizeMode: "contain",
   },
 });
