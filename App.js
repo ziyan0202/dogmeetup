@@ -5,6 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import LandingScreen from "./components/auth/Landing";
 import * as firebase from "firebase";
+import "firebase/firestore";
 import RegisterScreen from "./components/auth/Register";
 import LoginScreen from "./components/auth/Login";
 //import redux
@@ -32,6 +33,8 @@ const firebaseConfig = {
 if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig);
 }
+const db = firebase.firestore();
+
 
 const Stack = createStackNavigator();
 
@@ -105,6 +108,23 @@ export class App extends Component {
       </Provider>
     );
   }
+
+}
+
+export async function getPosts(){
+  console.log("GetPosts Started");
+  
+  return db.collection("posts").limit(20).get().then(snapshot =>{
+    var posts = [];
+    
+    snapshot.forEach(doc =>{
+      console.log(doc.data());
+      posts.push(doc.data());
+    });
+
+    return posts;
+  });
+  
 }
 
 export default App;
@@ -115,4 +135,14 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
   },
+  post: {
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 5,
+    height: 100,
+  },
+  postTitle: {
+    fontWeight: "bold",
+    fontSize: 24,
+  }
 });
