@@ -36,8 +36,7 @@ function Profile(props) {
       firebase
         .firestore()
         .collection("posts")
-        .doc(props.route.params.uid)
-        .collection("userPosts")
+        .where("userID","==",props.route.params.uid)
         .orderBy("creation", "asc") //oldest date to most recent date
         .get()
         .then((snapshot) => {

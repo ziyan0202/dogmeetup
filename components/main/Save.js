@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, View, TextInput, Image, Button } from "react-native";
 import firebase from "firebase";
 import { NavigationContainer } from "@react-navigation/native";
+import { getUserName } from "../../App";
 require("firebase/firestore");
 require("firebase/firebase-storage");
 
@@ -17,7 +18,7 @@ export default function Save(props) {
       .storage()
       .ref()
       .child(
-        `post/${firebase.auth().currentUser.uid}/${Math.random().toString(36)}`
+        `posts/${firebase.auth().currentUser.uid}/${Math.random().toString(36)}`
       )
       .put(blob); //create random number with 36 character
     const taskProgress = (snapshot) => {
@@ -35,16 +36,18 @@ export default function Save(props) {
     };
     task.on("state_changed", taskProgress, taskError, taskCompleted);
   };
-  const savePostData = (downloadURL) => {
+  const savePostData = async (downloadURL) => {
+    const userName = await getUserName(firebase.auth().currentUser.uid);
     firebase
       .firestore()
       .collection("posts")
-      .doc(firebase.auth().currentUser.uid)
-      .collection("userPosts")
       .add({
-        downloadURL,
+        contentURL: downloadURL, //
         caption,
-        creation: firebase.firestore.FieldValue.serverTimestamp(),
+        contentType: "image", //This is generalized so we can support "Location" for events
+        timePosted: firebase.firestore.FieldValue.serverTimestamp(),
+        userID: firebase.auth().currentUser.uid,
+        userName,
       })
       .then(function () {
         //will go to beginning route of navigator, return to main page

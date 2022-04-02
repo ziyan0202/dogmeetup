@@ -112,11 +112,8 @@ export class App extends Component {
 }
 
 export async function getPosts(){
-  console.log("GetPosts Started");
-  
-  return db.collection("posts").limit(20).get().then(snapshot =>{
+  return db.collection("posts").orderBy("timePosted","desc").limit(20).get().then(snapshot =>{
     var posts = [];
-    
     snapshot.forEach(doc =>{
       console.log(doc.data());
       posts.push(doc.data());
@@ -125,6 +122,15 @@ export async function getPosts(){
     return posts;
   });
   
+}
+
+export async function getUserName(uid){
+  return db.collection("users")
+  .doc(uid)
+  .get()
+  .then(snapshot =>{
+    return snapshot.data().name;
+  });
 }
 
 export default App;
