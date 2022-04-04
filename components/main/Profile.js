@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Button, Text, Image, FlatList } from "react-native";
 import { connect } from "react-redux";
+import Feed from "./Feed.js";
 import firebase from "firebase";
 require("firebase/firestore");
 
@@ -37,7 +38,7 @@ function Profile(props) {
         .firestore()
         .collection("posts")
         .where("userID","==",props.route.params.uid)
-        .orderBy("creation", "asc") //oldest date to most recent date
+        .orderBy("timePosted", "asc") //oldest date to most recent date
         .get()
         .then((snapshot) => {
           //iterate through all the docs then build an array the way we want it
@@ -55,7 +56,7 @@ function Profile(props) {
     } else {
       setFollowing(false);
     }
-  }, [props.route.params.uid, props.following]); //only when this variable update will do the useEffect
+  }, [props.route.params.uid, props.following, userPosts]); //only when this variable update will do the useEffect
 
   if (user === null) {
     return <View />;
@@ -108,6 +109,7 @@ function Profile(props) {
           <Button title="Logout" onPress={() => onLogout()} />
         )}
       </View>
+      {/* Old gallery view for user posts (this may be preferable but it wasn't working at the time of comment)
       <View style={styles.containerGallery}>
         <FlatList
           numColumns={3}
@@ -120,6 +122,8 @@ function Profile(props) {
           )}
         />
       </View>
+          */}
+        <Feed key={props.route.params.uid} targetUser={props.route.params.uid}></Feed>
     </View>
   );
 }

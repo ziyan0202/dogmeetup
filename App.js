@@ -111,17 +111,30 @@ export class App extends Component {
 
 }
 
-export async function getPosts(){
-  return db.collection("posts").orderBy("timePosted","desc").limit(20).get().then(snapshot =>{
+export async function getPosts(uid){
+  var query = db.collection("posts").orderBy("timePosted","desc").limit(30);
+  if(uid !== undefined){
+    query = query.where("userID","==",uid);
+  }
+  return query.get().then(snapshot =>{
     var posts = [];
     snapshot.forEach(doc =>{
       console.log(doc.data());
       posts.push(doc.data());
+      posts[posts.length-1].id = doc.id;
     });
 
     return posts;
   });
   
+}
+
+export async function deletePost(docID){
+  await db
+    .collection("posts")
+    .doc(docID)
+    .delete();
+  return;
 }
 
 export async function getUserName(uid){

@@ -42,6 +42,7 @@ export class Main extends Component {
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="home" color={color} size={26} />
             ),
+            unmountOnBlur: true,//To make sure the page has to reload when we navigate around
           }}
         />
         <Tab.Screen
@@ -90,6 +91,7 @@ export class Main extends Component {
                 size={26}
               />
             ),
+            unmountOnBlur: true, //To make sure the page has to reload when we navigate around
           }}
         />
       </Tab.Navigator>
