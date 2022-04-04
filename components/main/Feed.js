@@ -54,7 +54,7 @@ export default function Feed(props) {
         <Text>{obj.caption}</Text>
         <Image style={styles.image} source={{uri: obj.contentURL}} />
         {props.targetUser == firebase.auth().currentUser.uid ? (
-          <Button style={styles.deleteButton} title="Delete" onPress={() => onDelete(obj.id)}/>
+          <Button color={buttonColor} title="Delete" onPress={() => onDelete(obj.id)}/>
         ):(
           <></>
         )}
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "black",
     borderRadius: 5,
-    height: 200,
+    height: 350,
     width: "95%",
     alignSelf: "center",
     marginBottom: 10,
@@ -96,5 +96,8 @@ const styles = StyleSheet.create({
   image: {
     resizeMode: "contain",
     flex: 1,
+    margin: 10
   }
 });
+
+const buttonColor = "#DC3545";
