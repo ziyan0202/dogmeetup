@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Button, Text, Image, FlatList } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Button,
+  Text,
+  Image,
+  FlatList,
+  SafeAreaView,
+  ScrollView,
+} from "react-native";
 import { connect } from "react-redux";
 import Feed from "./Feed.js";
 import firebase from "firebase";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { NavigationContainer } from "@react-navigation/native";
 require("firebase/firestore");
 
 function Profile(props) {
@@ -37,7 +48,7 @@ function Profile(props) {
       firebase
         .firestore()
         .collection("posts")
-        .where("userID","==",props.route.params.uid)
+        .where("userID", "==", props.route.params.uid)
         .orderBy("timePosted", "asc") //oldest date to most recent date
         .get()
         .then((snapshot) => {
@@ -87,13 +98,69 @@ function Profile(props) {
   const onLogout = () => {
     firebase.auth().signOut();
   };
+  const { navigation } = props;
 
   return (
     //style
-    <View style={styles.container}>
-      <View style={styles.containerInfo}>
-        <Text>{user.name}</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        style={styles.containerInfo}
+        contentContainerStyle={{
+          justifyContent: "center",
+        }}
+      >
+        <Image
+          style={styles.userImg}
+          source={require("../../images/defaultUserImg.png")}
+        />
+        <Text style={styles.userName}>{user.name}</Text>
         <Text>{user.email}</Text>
+        <Text style={styles.aboutUser}>
+          I'm a WashU student. I like dogs. I have two dogs.
+        </Text>
+        <View style={styles.userBtnWrapper}>
+          {props.route.params.uid !== firebase.auth().currentUser.uid ? (
+            <>
+              <TouchableOpacity style={styles.userBtn} onPress={() => {}}>
+                <Text style={styles.userbtnTxt}>Message</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.userBtn} onPress={() => {}}>
+                <Text style={styles.userbtnTxt}>Follow</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <TouchableOpacity
+                style={styles.userBtn}
+                onPress={() => navigation.navigate("EditProfile")}
+              >
+                <Text style={styles.userbtnTxt}>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.userBtn}
+                onPress={() => onLogout()}
+              >
+                <Text style={styles.userbtnTxt}>Logout</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+
+        <View style={styles.userInfoWrapper}>
+          <View style={styles.userInfoItem}>
+            <Text style={styles.userInfoTitle}>22</Text>
+            <Text style={styles.userInfoSubTitle}>Posts</Text>
+          </View>
+          <View style={styles.userInfoItem}>
+            <Text style={styles.userInfoTitle}>10,000</Text>
+            <Text style={styles.userInfoSubTitle}>Followers</Text>
+          </View>
+          <View style={styles.userInfoItem}>
+            <Text style={styles.userInfoTitle}>100</Text>
+            <Text style={styles.userInfoSubTitle}>Following</Text>
+          </View>
+        </View>
+        {/* Next is posts */}
 
         {/* Conditional render: If the user is viewing their own profile, don't render the button */}
         {props.route.params.uid !== firebase.auth().currentUser.uid ? (
@@ -108,8 +175,8 @@ function Profile(props) {
         ) : (
           <Button title="Logout" onPress={() => onLogout()} />
         )}
-      </View>
-      {/* Old gallery view for user posts (this may be preferable but it wasn't working at the time of comment)
+
+        {/* Old gallery view for user posts (this may be preferable but it wasn't working at the time of comment)
       <View style={styles.containerGallery}>
         <FlatList
           numColumns={3}
@@ -123,8 +190,13 @@ function Profile(props) {
         />
       </View>
           */}
-        <Feed key={props.route.params.uid} targetUser={props.route.params.uid}></Feed>
-    </View>
+
+        <Feed
+          key={props.route.params.uid}
+          targetUser={props.route.params.uid}
+        ></Feed>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -135,22 +207,66 @@ const mapStateToProps = (store) => ({
 });
 
 const styles = StyleSheet.create({
+  //Conflix
   container: {
     flex: 1,
   },
   containerInfo: {
-    margin: 20,
+    backgroundColor: "#fff",
+    padding: 20,
   },
   containerGallery: {
     flex: 1,
   },
-  image: {
-    flex: 1,
-    aspectRatio: 1 / 1,
+  userImg: {
+    height: 150,
+    width: 150,
+    borderRadius: 75,
   },
-  containerImage: {
-    //even only one image in the row it will retain the size
-    flex: 1 / 3,
+  userName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  aboutUser: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#666",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  userBtnWrapper: {
+    flexDirection: "row",
+    justifyContent: "center",
+    width: "100%",
+    marginBottom: 10,
+  },
+  userBtn: {
+    borderColor: "#2e64e5",
+    borderWidth: 2,
+    borderRadius: 3,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginHorizontal: 5,
+  },
+  userbtnTxt: {
+    color: "#2e64e5",
+  },
+  userInfoWrapper: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+    marginVertical: 20,
+  },
+  userInfoItem: {
+    justifyContent: "center",
+  },
+  userInfoTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 5,
+    textAlign: "center",
   },
 });
 export default connect(mapStateToProps, null)(Profile);

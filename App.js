@@ -18,6 +18,7 @@ import thunk from "redux-thunk";
 import MainScreen from "./components/Main";
 import AddScreen from "./components/main/Add";
 import SaveScreen from "./components/main/Save";
+import EditProfileScreen from "./components/main/EditProfileScreen";
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -34,7 +35,6 @@ if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
-
 
 const Stack = createStackNavigator();
 
@@ -103,47 +103,57 @@ export class App extends Component {
               component={SaveScreen}
               navigation={this.props.navigation}
             />
+            <Stack.Screen
+              name="EditProfile"
+              component={EditProfileScreen}
+              options={{
+                headerTitle: "Edit Profile",
+                headerBackTitleVisible: false,
+                headerTitleAlign: "center",
+                headerStyle: {
+                  backgroundColor: "#fff",
+                  shadowColor: "#fff",
+                  elevation: 0,
+                },
+              }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </Provider>
     );
   }
-
 }
 
-export async function getPosts(uid){
-  var query = db.collection("posts").orderBy("timePosted","desc").limit(30);
-  if(uid !== undefined){
-    query = query.where("userID","==",uid);
+export async function getPosts(uid) {
+  var query = db.collection("posts").orderBy("timePosted", "desc").limit(30);
+  if (uid !== undefined) {
+    query = query.where("userID", "==", uid);
   }
-  return query.get().then(snapshot =>{
+  return query.get().then((snapshot) => {
     var posts = [];
-    snapshot.forEach(doc =>{
+    snapshot.forEach((doc) => {
       console.log(doc.data());
       posts.push(doc.data());
-      posts[posts.length-1].id = doc.id;
+      posts[posts.length - 1].id = doc.id;
     });
 
     return posts;
   });
-  
 }
 
-export async function deletePost(docID){
-  await db
-    .collection("posts")
-    .doc(docID)
-    .delete();
+export async function deletePost(docID) {
+  await db.collection("posts").doc(docID).delete();
   return;
 }
 
-export async function getUserName(uid){
-  return db.collection("users")
-  .doc(uid)
-  .get()
-  .then(snapshot =>{
-    return snapshot.data().name;
-  });
+export async function getUserName(uid) {
+  return db
+    .collection("users")
+    .doc(uid)
+    .get()
+    .then((snapshot) => {
+      return snapshot.data().name;
+    });
 }
 
 export default App;
@@ -163,5 +173,5 @@ const styles = StyleSheet.create({
   postTitle: {
     fontWeight: "bold",
     fontSize: 24,
-  }
+  },
 });
