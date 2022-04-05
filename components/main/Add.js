@@ -75,7 +75,7 @@ export default function Add({ navigation }) {
       </View>
 
       <Button
-        title="Flip Image"
+        title="Switch Camera"
         onPress={() => {
           setType(
             type === Camera.Constants.Type.back

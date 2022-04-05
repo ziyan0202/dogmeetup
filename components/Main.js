@@ -56,7 +56,7 @@ export class Main extends Component {
           }}
         />
         <Tab.Screen
-          name="AddContainer"
+          name="Add Post"
           component={EmptyScreen}
           listeners={({ navigation }) => ({
             //A user press this tab
