@@ -124,9 +124,17 @@ function Profile(props) {
               <TouchableOpacity style={styles.userBtn} onPress={() => {}}>
                 <Text style={styles.userbtnTxt}>Message</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.userBtn} onPress={() => {}}>
-                <Text style={styles.userbtnTxt}>Follow</Text>
-              </TouchableOpacity>
+              {/* To check if the user is following the profile viewing */}
+              {following ? (
+                <TouchableOpacity style={styles.followingBtn} onPress={() => onUnfollow()}>
+                  <Text style={styles.followingTxt}>Following</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity style={styles.userBtn} onPress={() => onFollow()}>
+                  <Text style={styles.userbtnTxt}>Follow</Text>
+                </TouchableOpacity>
+              )}
+              
             </>
           ) : (
             <>
@@ -161,20 +169,6 @@ function Profile(props) {
           </View>
         </View>
         {/* Next is posts */}
-
-        {/* Conditional render: If the user is viewing their own profile, don't render the button */}
-        {props.route.params.uid !== firebase.auth().currentUser.uid ? (
-          <View>
-            {/* To check if the user is following the profile viewing */}
-            {following ? (
-              <Button title="Following" onPress={() => onUnfollow()} />
-            ) : (
-              <Button title="Follow" onPress={() => onFollow()} />
-            )}
-          </View>
-        ) : (
-          <Button title="Logout" onPress={() => onLogout()} />
-        )}
 
         {/* Old gallery view for user posts (this may be preferable but it wasn't working at the time of comment)
       <View style={styles.containerGallery}>
@@ -250,8 +244,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginHorizontal: 5,
   },
+  followingBtn: {
+    borderColor: "#2e64e5",
+    borderWidth: 2,
+    borderRadius: 3,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginHorizontal: 5,
+    backgroundColor: "#2e64e5"
+  },
   userbtnTxt: {
     color: "#2e64e5",
+  },
+  followingTxt: {
+    color: "#FFFFFF",
   },
   userInfoWrapper: {
     flexDirection: "row",
