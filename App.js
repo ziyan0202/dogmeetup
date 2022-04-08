@@ -19,6 +19,7 @@ import MainScreen from "./components/Main";
 import AddScreen from "./components/main/Add";
 import SaveScreen from "./components/main/Save";
 import EditProfileScreen from "./components/main/EditProfileScreen";
+import ChatScreen from "./components/main/ChatScreen";
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -117,6 +118,16 @@ export class App extends Component {
                 },
               }}
             />
+            <Stack.Screen
+              name="ChatScreen"
+              component={ChatScreen}
+              options={({route}) => ({
+                headerTitle: route.params.userName,
+                headerBackTitleVisible: false,
+                
+              })}
+            />
+
           </Stack.Navigator>
         </NavigationContainer>
       </Provider>
@@ -132,7 +143,7 @@ export async function getPosts(uid) {
   return query.get().then((snapshot) => {
     var posts = [];
     snapshot.forEach((doc) => {
-      console.log(doc.data());
+      //console.log(doc.data());
       posts.push(doc.data());
       posts[posts.length - 1].id = doc.id;
     });

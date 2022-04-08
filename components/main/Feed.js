@@ -11,20 +11,20 @@ export default function Feed(props) {
 
   const _getPosts = async () => {
     if (props.targetUser !== undefined) {
-      console.log(props.targetUser);
+     // console.log(props.targetUser);
       const posts = await getPosts(props.targetUser);
-      console.log("POSTS", posts);
+      //console.log("POSTS", posts);
       setPosts(posts);
     } else {
       const posts = await getPosts();
-      console.log("POSTS", posts);
+      //console.log("POSTS", posts);
       setPosts(posts);
     }
   };
 
   useEffect(() => {
     _getPosts();
-    console.log(posts);
+    //console.log(posts);
   }, []);
 
   //Haven't figured out how to use this yet. Pull-to-refresh is complicated.
@@ -41,7 +41,7 @@ export default function Feed(props) {
   };
 
   const postList = posts?.map((obj) => {
-    console.log(obj.userID);
+    //console.log(obj.userID);
     return (
       <View style={styles.post}>
         <Text

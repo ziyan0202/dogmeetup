@@ -25,7 +25,7 @@ function Profile(props) {
 
   useEffect(() => {
     const { currentUser, posts } = props;
-    console.log({ currentUser, posts });
+    //console.log({ currentUser, posts });
     //Trying to access our own profile
     if (props.route.params.uid === firebase.auth().currentUser.uid) {
       setUser(currentUser);
@@ -58,7 +58,7 @@ function Profile(props) {
             const id = doc.id;
             return { id, ...data };
           });
-          console.log(posts);
+          //console.log(posts);
           setUserPosts(posts);
         });
     }
@@ -121,8 +121,8 @@ function Profile(props) {
         <View style={styles.userBtnWrapper}>
           {props.route.params.uid !== firebase.auth().currentUser.uid ? (
             <>
-              <TouchableOpacity style={styles.userBtn} onPress={() => {}}>
-                <Text style={styles.userbtnTxt}>Message</Text>
+              <TouchableOpacity style={styles.userBtn} onPress={() => props.navigation.navigate('ChatScreen',{userName: user.name,id:props.route.params.uid,current:firebase.auth().currentUser.uid})}>
+                <Text style={styles.userbtnTxt} >Message</Text>
               </TouchableOpacity>
               {/* To check if the user is following the profile viewing */}
               {following ? (
