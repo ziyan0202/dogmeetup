@@ -12,7 +12,17 @@ const Message = (props) => {
     
 
   const db =firebase.firestore()
-  let Messages =[
+  let Messages = firestore().where("userID","array-contains",firebase.auth().currentUser.uid).get().then(docRefs =>{
+    let Messages = [];
+    docRefs.forEach(doc =>{
+      let newMessage = doc.collection('Messages').orderby("createdAt","desc").get().then(messages =>{
+        return messages[0];
+      });
+      Messages.append(newMessage);
+    })
+    return Messages;
+  })
+  /*let Messages =[
     {
     id:1,
     userid:2,
@@ -31,7 +41,7 @@ const Message = (props) => {
     messageTime: '4 days ago',
     }
     
-  ];
+  ];*/
   //console.log("!!!"+Messages[0].userName );
   //from where
   let announce =null;
@@ -68,9 +78,7 @@ const Message = (props) => {
             // num +=1;
             // m_id +=1;
            
-           
           }
-          
         
         }
       })
