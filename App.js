@@ -153,8 +153,13 @@ export async function getPosts(uid) {
 }
 
 export async function deletePost(docID) {
-  await db.collection("posts").doc(docID).delete();
+  //double check that the current user is authorized to delete the post
+  const postdata = await db.collection("posts").doc(docID).get();
+  if(postdata.data().userID == firebase.auth().currentUser.uid){
+    await db.collection("posts").doc(docID).delete();
+  }
   return;
+  
 }
 
 export async function getUserName(uid) {
@@ -165,6 +170,92 @@ export async function getUserName(uid) {
     .then((snapshot) => {
       return snapshot.data().name;
     });
+}
+
+export async function followEvent(uid,eventID){
+  await db.collection("EventsFollowing").doc(uid).collection("events").doc(eventID).set({id:eventID});
+  return;
+}
+
+export async function unfollowEvent(uid,eventID){
+  await db.collection("EventsFollowing").doc(uid).collection("events").doc(eventID).delete();
+  return;
+}
+
+export async function createEvent(eventData){
+  //expected eventData Schema:
+  /*{
+    description: <string>,
+    eventCoordinates: <geopoint>, (We can avoid using this one for now)
+    eventLocation: <string>,
+    eventTime: <timestamp>,
+    image: <string>, (url)
+    name: <string>,
+    userId: <string>
+  }*/
+  await db.collection("Events").add(eventData);
+  return;
+}
+
+export async function deleteEvent(eventID){
+  //double check that the current user is authorized to delete the post
+  const event = await db.collection("Events").doc(eventID).get();
+  if(event.data().userID == firebase.auth().currentUser.uid){
+    await db.collection("Events").doc(eventID).delete();
+  }
+  return;
+}
+
+export async function getEvents(pastEvents = false){
+  var query = db.collection("Events");
+  if(pastEvents){
+    //Dig through events that already happened, newest to oldest
+    query = query.where("eventTime","<",Date.now()).orderBy("eventTime","desc");
+  }
+  else{
+    //Get upcoming events, soonest to farthest out
+    query = query.where("eventTime",">",Date.now()).orderBy("eventTime","asc");
+  }
+  return query.get().then((snapshot) => {
+    var events = [];
+    snapshot.forEach((doc) => {
+      //console.log(doc.data());
+      events.push(doc.data());
+      events[posts.length - 1].id = doc.id;
+    });
+
+    return events;
+  });
+}
+
+export async function getFollowedEvents(follower,pastEvents = false){
+  //grab the list of followed events
+  const eventIDs = await db.collection("EventsFollowing")
+                           .doc(follower)
+                           .collection("events")
+                           .get()
+                           .then((docs) => {
+                              var idList = []
+                              docs.forEach(doc => {
+                                idList.append(doc.id);
+                              });
+                              return idList;
+                           });
+  //use the event list to query for the related events (document id is in the list of event ids)
+  var query = db.collection("Events").where(firebase.firestore.FieldPath.documentId(),'in',eventIDs);
+  
+  //execute
+  return query.get().then((snapshot) => {
+    var events = [];
+    snapshot.forEach((doc) => {
+      //console.log(doc.data());
+      events.push(doc.data());
+      events[posts.length - 1].id = doc.id;
+    });
+
+    return events;
+  });
+   
 }
 
 export default App;
