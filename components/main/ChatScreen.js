@@ -16,7 +16,7 @@ const Message = (props) => {
  
   useEffect(() => {
 
-    const subscribe =db.collection('Chat').where("userID","array-contains",data.user.from).where("userID","array-contains",data.user._id).collection('Messages').onSnapshot((snapshot) => {
+    const subscribe =db.collection('Chat').onSnapshot((snapshot) => {
       
 
       snapshot.docChanges().forEach((change) => {
@@ -46,10 +46,8 @@ const Message = (props) => {
     firebase
        .firestore()
        .collection('Chat')
-       .where("userID","array-contains",data.user.from)
-       .where("userID","array-contains",data.user._id)
-       .collection('Messages')
-       .add(messages[0])
+       .doc(Date.now().toString())
+       .set(messages[0])
        
   },[messages])
   
