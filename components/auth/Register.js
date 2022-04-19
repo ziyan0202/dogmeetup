@@ -28,6 +28,15 @@ export class Register extends Component {
           });
         console.log(result);
       })
+    // firebase
+    // .auth()
+    // .createUserWithEmailAndPassword(email,password)
+    // .then((authUser) => {
+    //   return authUser.user.updateProfile({
+    //     displayName: name
+    //   })
+    // })
+
       .catch((error) => alert(error.message));
   }
   render() {

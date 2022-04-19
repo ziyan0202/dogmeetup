@@ -6,7 +6,9 @@ import {GiftedChat, Send} from 'react-native-gifted-chat'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 
+
 const Message = (props) => {
+
     
   const [user,setUser] = useState(null)
   const [name,setName] = useState('')
@@ -80,6 +82,7 @@ const Message = (props) => {
         from:props.route.params.current,
         name: props.route.params.userName,
         avatar:'https://placeimg.com/140/140/any'
+        
      }}
      alwaysShowSend
      renderSend ={renderSend}
