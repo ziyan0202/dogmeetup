@@ -15,6 +15,7 @@ import firebase from "firebase";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 require("firebase/firestore");
+// import {db} from './MessageScreen'
 
 function Profile(props) {
   //In order to display current user and other user
@@ -22,11 +23,71 @@ function Profile(props) {
   const [user, setUser] = useState(null);
   //Whether or not the current user is following the profile viewing
   const [following, setFollowing] = useState(false);
+  const[allpost,SetAllpost] = useState([]);
+  const[allfollow,SetAllfollow] = useState([]);
+  const[allfollower,SetAllfollower] = useState([]);
+
+  const db =firebase.firestore()
+  useEffect(() => {
+  const subscribe =db.collection('posts').where("userID", "==", props.route.params.uid).onSnapshot((snapshot) => {
+
+    SetAllpost(snapshot.docs.map(doc =>({
+      id:doc.id,
+      postnameid:doc.data().userID
+    })))
+  })
+  return ()=>subscribe();
+  },[]);
+
+  // const f =
+  // db.collection('following').doc(props.route.params.uid).collection("userFollowing").onSnapshot((snapshot) => {
+  //   SetAllfollow(snapshot.docs.map(doc =>({
+  //     follow:doc
+  //   })))
+  // })
+   
+  //  db.collection('follower').doc(props.route.params.uid).collection("userFollower").onSnapshot((snapshot) => {
+  //   SetAllfollower(snapshot.docs.map(doc =>({
+  //     follower:doc
+  //   })))
+  // })
+
+
+  //followernum();
+
+
+  //  console.log("ss"+allfollow)
+
+
+
+  const post_num=allpost.length;
+
+ 
 
   useEffect(() => {
     const { currentUser, posts } = props;
     //console.log({ currentUser, posts });
     //Trying to access our own profile
+
+  // const f =
+  db.collection('following').doc(props.route.params.uid).collection("userFollowing").onSnapshot((snapshot) => {
+    SetAllfollow(snapshot.docs.map(doc =>({
+      follow:doc
+    })))
+  })
+   //f();
+   db.collection('follower').doc(props.route.params.uid).collection("userFollower").onSnapshot((snapshot) => {
+    SetAllfollower(snapshot.docs.map(doc =>({
+      follower:doc
+    })))
+  })
+  //follow
+
+
+
+
+
+
     if (props.route.params.uid === firebase.auth().currentUser.uid) {
       setUser(currentUser);
       setUserPosts(posts);
@@ -56,12 +117,14 @@ function Profile(props) {
           let posts = snapshot.docs.map((doc) => {
             const data = doc.data();
             const id = doc.id;
+           
             return { id, ...data };
           });
           //console.log(posts);
           setUserPosts(posts);
         });
     }
+    // console.log(userPosts[0])
     if (props.following.indexOf(props.route.params.uid) > -1) {
       setFollowing(true);
     } else {
@@ -72,6 +135,35 @@ function Profile(props) {
   if (user === null) {
     return <View />;
   }
+
+  const Follower = () => {
+    
+    firebase
+      .firestore()
+      .collection("follower")
+      .doc(props.route.params.uid)
+      .collection("userFollower")
+      .doc(firebase.auth().currentUser.uid)
+      .set({});
+  };
+
+  const UnFollower = () => {
+    
+    firebase
+      .firestore()
+      .collection("follower")
+      .doc(props.route.params.uid)
+      .collection("userFollower")
+      .doc(firebase.auth().currentUser.uid)
+      .delete();
+
+  };
+
+
+
+
+
+
   //Follow and Unfollow functions
   const onFollow = () => {
     //Following the firebase firestore structure
@@ -82,6 +174,8 @@ function Profile(props) {
       .collection("userFollowing")
       .doc(props.route.params.uid)
       .set({});
+
+      Follower()
   };
 
   const onUnfollow = () => {
@@ -93,6 +187,8 @@ function Profile(props) {
       .collection("userFollowing")
       .doc(props.route.params.uid)
       .delete();
+
+      UnFollower();
   };
 
   const onLogout = () => {
@@ -101,12 +197,17 @@ function Profile(props) {
   const { navigation } = props;
 
   return (
+
+   
+
+
     //style
     <SafeAreaView style={styles.container}>
       <ScrollView
         style={styles.containerInfo}
         contentContainerStyle={{
           justifyContent: "center",
+          //alignItems: 'center'
         }}
       >
         <Image
@@ -156,16 +257,32 @@ function Profile(props) {
 
         <View style={styles.userInfoWrapper}>
           <View style={styles.userInfoItem}>
-            <Text style={styles.userInfoTitle}>22</Text>
+
+      
+             
+              <Text style={styles.userInfoTitle}>{post_num}</Text>
+            
             <Text style={styles.userInfoSubTitle}>Posts</Text>
+
+
+            
           </View>
+          
           <View style={styles.userInfoItem}>
-            <Text style={styles.userInfoTitle}>10,000</Text>
+            <Text style={styles.userInfoTitle}>{allfollower.length}</Text>
             <Text style={styles.userInfoSubTitle}>Followers</Text>
           </View>
-          <View style={styles.userInfoItem}>
-            <Text style={styles.userInfoTitle}>100</Text>
-            <Text style={styles.userInfoSubTitle}>Following</Text>
+          {/* <View style={styles.userInfoItem}  onPress={() => props.navigation.navigate("followingscreen")}> */}
+          <View style={styles.userInfoItem} >
+            <Text style={styles.userInfoTitle} >{allfollow.length}</Text>
+
+            <TouchableOpacity   onPress={() => navigation.navigate("Followingscreen")}>
+                   <Text style={styles.userInfoSubTitle} >{'Following'}</Text>
+
+                </TouchableOpacity>
+                {/* <Text style={styles.userInfoSubTitle} >Following</Text>  */}
+           
+       
           </View>
         </View>
         {/* Next is posts */}

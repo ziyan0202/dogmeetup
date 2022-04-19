@@ -21,6 +21,8 @@ import SaveScreen from "./components/main/Save";
 import EditProfileScreen from "./components/main/EditProfileScreen";
 import ChatScreen from "./components/main/ChatScreen";
 
+import Following from "./components/main/Following"
+
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const firebaseConfig = {
@@ -127,6 +129,16 @@ export class App extends Component {
                 
               })}
             />
+
+             <Stack.Screen
+              name="Followingscreen"
+              component={Following}
+              options={({route}) => ({
+                headerTitle: "Your Following",
+                headerBackTitleVisible: false,
+                
+              })}
+            />             
 
           </Stack.Navigator>
         </NavigationContainer>

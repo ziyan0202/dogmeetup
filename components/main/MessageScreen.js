@@ -11,9 +11,11 @@ import { set } from "react-native-reanimated";
 const Message = (props) => {
     //const { navigation } = props;
     const[message,SetMessage] = useState([]);
+    const[users,SetUsers] = useState([]);
     
     const db =firebase.firestore()
-  
+    // const { currentUser} = props;
+    // SetUsers(currentUser)
   
   useEffect(() => {
     const subscribe =db.collection('Chat').onSnapshot((snapshot) => {
@@ -22,10 +24,16 @@ const Message = (props) => {
         id:doc.id,
         messagepost:doc.data()
       })))
+
+   
+
     })
      
     return ()=>subscribe();
   }, []);
+
+
+  
 
   return (
     <View style = {styles.container}>

@@ -11,7 +11,7 @@ import {getUserName} from "../../App.js"
 
 const Postmessage = ({text,id,user,fromid,to,time,img,prop}) => {
 
-const[users,SetUsers] = useState([]);
+ const[users,SetUsers] = useState([]);
 
     useEffect (()=> {
         // if(id){
@@ -28,21 +28,24 @@ const[users,SetUsers] = useState([]);
         // }
    
      },[id])
-
+    
 
     //   console.log(Object.keys(naame).length)
+  
+    //SetUsers(currentUser)
 
     const currentemail =firebase.auth().currentUser.email;
 
     //const nn =firebase.auth().currentUser.displayName;
     const name = getUserName(firebase.auth().currentUser.uid)
-    console.log(prop)
+    //console.log()
 
 
     return (         
         <View style = {styles.container}>
 
             { (firebase.auth().currentUser.uid == to) &&
+            
             <View style={styles.card} >
                 <View style={styles.UserInfo}>
                 <View style = {styles.ImgWrapper}>
@@ -52,7 +55,7 @@ const[users,SetUsers] = useState([]);
                 /></View>
                 <View style = {styles.Textsection}>
                 <View style = {styles.UserInfoText}>
-                <Text style = {styles.UserName}>{currentemail}:</Text>
+                <Text style = {styles.UserName}>{fromid}:</Text>
                 {/* <Text style = {styles.PostTime}>{time}</Text> */}
 
                 </View> 

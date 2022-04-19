@@ -37,6 +37,7 @@ export class Main extends Component {
     return (
       <Tab.Navigator initialRouteName="Feed">
         <Tab.Screen
+        
           name="Feed"
           component={FeedScreen}
           options={{
