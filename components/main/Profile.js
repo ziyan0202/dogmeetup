@@ -207,7 +207,7 @@ function Profile(props) {
         style={styles.containerInfo}
         contentContainerStyle={{
           justifyContent: "center",
-          //alignItems: 'center'
+          alignItems: 'center'
         }}
       >
         <Image
@@ -257,32 +257,22 @@ function Profile(props) {
 
         <View style={styles.userInfoWrapper}>
           <View style={styles.userInfoItem}>
-
-      
              
               <Text style={styles.userInfoTitle}>{post_num}</Text>
             
             <Text style={styles.userInfoSubTitle}>Posts</Text>
-
-
             
           </View>
-          
+           
           <View style={styles.userInfoItem}>
             <Text style={styles.userInfoTitle}>{allfollower.length}</Text>
-            <Text style={styles.userInfoSubTitle}>Followers</Text>
+            <Text style={styles.userInfoSubTitle} onPress={() => navigation.navigate("Followerscreen",{id:props.route.params.uid})}>Followers</Text>
           </View>
-          {/* <View style={styles.userInfoItem}  onPress={() => props.navigation.navigate("followingscreen")}> */}
           <View style={styles.userInfoItem} >
-            <Text style={styles.userInfoTitle} >{allfollow.length}</Text>
-
-            <TouchableOpacity   onPress={() => navigation.navigate("Followingscreen")}>
-                   <Text style={styles.userInfoSubTitle} >{'Following'}</Text>
-
-                </TouchableOpacity>
-                {/* <Text style={styles.userInfoSubTitle} >Following</Text>  */}
-           
-       
+            <Text style={styles.userInfoTitle} >{allfollow.length}</Text>           
+            <View>
+              <Text style={styles.userInfoSubTitle} onPress={() => navigation.navigate("Followingscreen",{id:props.route.params.uid})}>Following</Text>
+            </View>
           </View>
         </View>
         {/* Next is posts */}

@@ -52,6 +52,9 @@ export default function Feed(props) {
     // setComment('')
     console.log('sss')
   }
+  const photo=()=>{
+    console.log('come on')
+  }
 
   const postList = posts?.map((obj) => {
     //console.log(obj.userID);
@@ -71,25 +74,15 @@ export default function Feed(props) {
         {/* <UserImg source={{uri: obj.userImg}} /> */}
         {/* <PostTime>{moment(obj.postTime.toDate()).fromNow()}</PostTime> */}
         <Text>{obj.caption}</Text>
-        <Image style={styles.image} source={{ uri: obj.contentURL }} />
-        <View  style={styles.showcomment}>
-          <TextInput
-          style={styles.comment}
-          placeholder="comment here..."
-          onChangeText={(e) => {
-            setComments(e.target.value)
-          }}
-        />
-         <View style={styles.btn_submit}>
-          <Pressable style={styles.button} onPress={() => postcomment()}>
-              <View style={styles.buttontext}>
-                <Text style={styles.text}>{'send'}</Text>
-              </View>
-              
-          </Pressable>
+        <Image style={styles.image} source={{ uri: obj.contentURL }}   
+            // props.navigation.navigate("Profile", {
+             
+            // })
+           
+          />     
+         <View style={styles.profile_post}>
          </View>
-        </View>
-        
+                   
         {props.targetUser == firebase.auth().currentUser.uid ? (
           <Button
             color={buttonColor}
@@ -124,17 +117,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#a7e1f6bd'
   },
-  btn_submit:{
-   
+  profile_post:{
     marginLeft: 160,
-    
-     height:40
+    width:170,
+    height:10
   },
-  
 
-  // buttontext:{
-  //   paddingRight:0
-  // },
   post: {
     borderWidth: 1,
     borderColor: "black",

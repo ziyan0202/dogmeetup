@@ -20,8 +20,8 @@ import AddScreen from "./components/main/Add";
 import SaveScreen from "./components/main/Save";
 import EditProfileScreen from "./components/main/EditProfileScreen";
 import ChatScreen from "./components/main/ChatScreen";
-
 import Following from "./components/main/Following"
+import Follower from './components/main/Follower'
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -134,11 +134,20 @@ export class App extends Component {
               name="Followingscreen"
               component={Following}
               options={({route}) => ({
-                headerTitle: "Your Following",
+                headerTitle: "Your Following list",
                 headerBackTitleVisible: false,
-                
               })}
-            />             
+            />  
+
+              <Stack.Screen
+              name="Followerscreen"
+              component={Follower}
+              options={({route}) => ({
+                headerTitle: "Your Follower list",
+                headerBackTitleVisible: false,
+              })}
+            /> 
+
 
           </Stack.Navigator>
         </NavigationContainer>
