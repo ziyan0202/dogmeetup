@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Button, TextInput } from "react-native";
+import { StyleSheet, View, Button, TextInput,ImageBackground } from "react-native";
 import firebase from "firebase";
 
+const background = require("../../images/bk.png");
 export class Login extends Component {
   constructor(props) {
     super(props);
@@ -11,6 +12,7 @@ export class Login extends Component {
     };
     this.onSignUp = this.onSignUp.bind(this);
   }
+  
   onSignUp() {
     const { email, password } = this.state;
     firebase
@@ -21,9 +23,12 @@ export class Login extends Component {
       })
       .catch((error) => alert(error.message));
   }
+
+
   render() {
     return (
-      <View>
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <ImageBackground source={background} resizeMode="cover" style={styles.imagebackground}>
         <TextInput
           style={styles.input}
           placeholder="email"
@@ -36,6 +41,7 @@ export class Login extends Component {
           onChangeText={(password) => this.setState({ password })}
         />
         <Button onPress={() => this.onSignUp()} title="Sign In" />
+        </ImageBackground>
       </View>
     );
   }
@@ -51,4 +57,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 5,
   },
+  imagebackground:{
+    flex:1,
+    alignItems:'center',
+    justifyContent: 'center',
+  }
 });

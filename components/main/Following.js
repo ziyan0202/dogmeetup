@@ -1,4 +1,4 @@
-import {ListItem,Container,View, Text,StyleSheet,TouchableOpacity,TextInput,Button,Image,FlatList} from 'react-native';
+import {ImageBackground,Container,View, Text,StyleSheet,ScrollView,SafeAreaView,Button,Image,FlatList} from 'react-native';
 import React, { useEffect, useState,useCallback } from "react";
 import * as firebase from "firebase";
 import "firebase/firestore";
@@ -18,50 +18,27 @@ const Following = (props) => {
     })
    return  ()=>list();
   }, []);
-
-
-
-
- 
-          // <View style={styles.text} >
-
-
-
-        // <Text onPress={() =>
-        // props.navigation.navigate("Profile", {
-        //    uid: following_id,
-        // })}>{following_id}</Text>
-
-          // </View>
-
-      // <FlatList
-      // renderItem={({}) => <Text style={styles.item}>{following_id}</Text>}
-      // />
   
-        
-
- 
+  const img = { uri: "https://reactjs.org/logo-og.png" };
   return (
     
       followlist.map (({following_id})=>(  
-     
-          <View style={styles.container} >
-            <View style = {styles.ImgWrapper}>
-                <Image
-                 style={styles.userImg}
-                 source={require("../../images/defaultUserImg.png")}
-                /></View>
+        
+        <SafeAreaView style={styles.container}>  
+       
+        <View style = {styles.ImgWrapper}>
+          
+          <Image
+          style={styles.userImg}
+          source={require("../../images/Avatar.png")}
+          /></View>
         <Text  style={styles.text} onPress={() =>
         props.navigation.navigate("Profile", {
-           uid: following_id,
+          uid: following_id,
         })}>{following_id}</Text>
-
-          </View>
-      
-      
-    ))
-    
-    
+       
+          </SafeAreaView>      
+    ))   
   );
 };
 

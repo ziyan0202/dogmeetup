@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+  ImageBackground,
   StyleSheet,
   View,
   Button,
@@ -195,14 +196,11 @@ function Profile(props) {
     firebase.auth().signOut();
   };
   const { navigation } = props;
-
+  const image = { uri: "https://reactjs.org/logo-og.png" };
   return (
-
-   
-
-
     //style
     <SafeAreaView style={styles.container}>
+      
       <ScrollView
         style={styles.containerInfo}
         contentContainerStyle={{
@@ -210,6 +208,7 @@ function Profile(props) {
           alignItems: 'center'
         }}
       >
+        {/* <ImageBackground source={image} resizeMode="stretch" style={styles.imagebackground}> */}
         <Image
           style={styles.userImg}
           source={require("../../images/defaultUserImg.png")}
@@ -296,6 +295,7 @@ function Profile(props) {
           key={props.route.params.uid}
           targetUser={props.route.params.uid}
         ></Feed>
+         {/* </ImageBackground> */}
       </ScrollView>
     </SafeAreaView>
   );
@@ -311,9 +311,12 @@ const styles = StyleSheet.create({
   //Conflix
   container: {
     flex: 1,
+    
   },
   containerInfo: {
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
+    backgroundColor: '#dbfbed',
+    
     padding: 20,
   },
   containerGallery: {
@@ -381,5 +384,9 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     textAlign: "center",
   },
+  imagebackground:{
+    flex: 1,
+    justifyContent: "center"
+  }
 });
 export default connect(mapStateToProps, null)(Profile);
