@@ -19,7 +19,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import ProfileScreen from "./main/Profile";
 import SearchScreen from "./main/Search";
 import firebase from "firebase";
-import MessageScreen from "./main/MessageScreen"
+import MessageScreen from "./main/MessageScreen";
 
 //To make sure the tab Add can run
 const EmptyScreen = () => {
@@ -37,14 +37,13 @@ export class Main extends Component {
     return (
       <Tab.Navigator initialRouteName="Feed">
         <Tab.Screen
-        
-          name="Feed"
+          name="Explore Meetup"
           component={FeedScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="home" color={color} size={26} />
             ),
-            unmountOnBlur: true,//To make sure the page has to reload when we navigate around
+            unmountOnBlur: true, //To make sure the page has to reload when we navigate around
           }}
         />
         <Tab.Screen
@@ -73,13 +72,17 @@ export class Main extends Component {
             ),
           }}
         />
-         <Tab.Screen
+        <Tab.Screen
           name="Messages"
           component={MessageScreen}
           navigation={this.props.navigation}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="message-processing-outline" color={color} size={26} />
+              <MaterialCommunityIcons
+                name="message-processing-outline"
+                color={color}
+                size={26}
+              />
             ),
           }}
         />

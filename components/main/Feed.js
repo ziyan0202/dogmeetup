@@ -1,19 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { getPosts, deletePost, getUserName } from "../../App.js";
-import { View, Text, Image, Button, StyleSheet,TextInput,Pressable } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  Button,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  TouchableOpacity,
+  SafeAreaView,
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import firebase from "firebase";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { MaskedViewComponent } from "@react-native-community/masked-view";
 import { backgroundColor } from "react-native/Libraries/Components/View/ReactNativeStyleAttributes";
-
+import AntDesign from "react-native-vector-icons/AntDesign";
 export default function Feed(props) {
   const [posts, setPosts] = useState([]);
-  const [comments, setComments] = useState('');
-  
+  const [comments, setComments] = useState("");
+  const [like, setLike] = useState([]);
+
   const _getPosts = async () => {
     if (props.targetUser !== undefined) {
-     // console.log(props.targetUser);
+      // console.log(props.targetUser);
       const posts = await getPosts(props.targetUser);
       //console.log("POSTS", posts);
       setPosts(posts);
@@ -42,56 +53,130 @@ export default function Feed(props) {
     setPosts(posts);
   };
 
-  const postcomment =(e)=> {
-   
+  const postcomment = (e) => {
     // db.collection('posts').doc(postId).collection('comments').add({
     //   text: comment,
     //   username: currentuser.displayName,
     //   timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     // })
     // setComment('')
-    console.log('sss')
-  }
-  const photo=()=>{
-    console.log('come on')
-  }
+    console.log("sss");
+  };
+  const photo = () => {
+    console.log("come on");
+  };
 
   const postList = posts?.map((obj) => {
     //console.log(obj.userID);
     return (
-      <View style={styles.post}>
-        <Text
-          style={styles.postUser}
-          onPress={() =>
-            props.navigation.navigate("Profile", {
-              uid: obj.userID,
-            })
-          }
+      <View
+        style={{
+          paddingBottom: 10,
+          borderBottomColor: "gray",
+          borderBottomWidth: 0.1,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: 15,
+          }}
         >
-          {obj.userName}
-        </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Image
+              source={require("../../images/defaultUserImg.png")}
+              style={{ width: 40, height: 40, borderRadius: 100 }}
+            />
+            <View style={{ paddingLeft: 5 }}>
+              <Text
+                style={{ fontSize: 15, fontWeight: "bold" }}
+                onPress={() =>
+                  props.navigation.navigate("Profile", {
+                    uid: obj.userID,
+                  })
+                }
+              >
+                {obj.userName}
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View
+          style={{
+            position: "relative",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Image
+            style={{ width: "100%", height: 400 }}
+            source={{ uri: obj.contentURL }}
+            // props.navigation.navigate("Profile", {
+
+            // })
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingHorizontal: 12,
+            paddingVertical: 15,
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <TouchableOpacity onPress={() => setLike(!like)}>
+              <AntDesign
+                name={like ? "heart" : "hearto"}
+                style={{
+                  paddingRight: 10,
+                  fontSize: 20,
+                  color: like ? "red" : "black",
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View stype={{ paddingHorizontal: 15 }}>
+          {/* <Text>
+            Liked by {like ? "you and" : ""}{" "}
+            {like ? data.likes + 1 : data.likes} others
+          </Text> */}
+          <Text
+            style={{
+              fontWeight: "700",
+              fontSize: 14,
+              paddingVertical: 2,
+              paddingLeft: 15,
+            }}
+          >
+            {obj.caption}
+          </Text>
+
+          {props.targetUser == firebase.auth().currentUser.uid ? (
+            <Button
+              color={buttonColor}
+              title="Delete"
+              onPress={() => onDelete(obj.id)}
+            />
+          ) : (
+            <></>
+          )}
+        </View>
+
         {/* User profile picture */}
         {/* <UserImg source={{uri: obj.userImg}} /> */}
         {/* <PostTime>{moment(obj.postTime.toDate()).fromNow()}</PostTime> */}
-        <Text>{obj.caption}</Text>
-        <Image style={styles.image} source={{ uri: obj.contentURL }}   
-            // props.navigation.navigate("Profile", {
-             
-            // })
-           
-          />     
-         <View style={styles.profile_post}>
-         </View>
-                   
-        {props.targetUser == firebase.auth().currentUser.uid ? (
-          <Button
-            color={buttonColor}
-            title="Delete"
-            onPress={() => onDelete(obj.id)}
-          />
-        ) : (
-          <></>
-        )}
+
+        <View style={styles.profile_post}></View>
       </View>
     );
   });
@@ -113,14 +198,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   showcomment: {
-    display:'flex', 
-    flexDirection: 'row',
-    backgroundColor: '#a7e1f6bd'
+    display: "flex",
+    flexDirection: "row",
+    backgroundColor: "#a7e1f6bd",
   },
-  profile_post:{
+  profile_post: {
     marginLeft: 160,
-    width:170,
-    height:10
+    width: 170,
+    height: 10,
   },
 
   post: {
@@ -143,27 +228,25 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   button: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     //maxWidth:'40%'
     // width: 100,
     // height:50
-    
   },
   text: {
     fontSize: 16,
     lineHeight: 21,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     letterSpacing: 0.25,
-    color: 'black',
-    alignSelf:'center'
-    
-  }
+    color: "black",
+    alignSelf: "center",
+  },
 });
 
 const buttonColor = "#DC3545";

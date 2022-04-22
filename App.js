@@ -20,8 +20,8 @@ import AddScreen from "./components/main/Add";
 import SaveScreen from "./components/main/Save";
 import EditProfileScreen from "./components/main/EditProfileScreen";
 import ChatScreen from "./components/main/ChatScreen";
-import Following from "./components/main/Following"
-import Follower from './components/main/Follower'
+import Following from "./components/main/Following";
+import Follower from "./components/main/Follower";
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -94,7 +94,9 @@ export class App extends Component {
             <Stack.Screen
               name="Main"
               component={MainScreen}
-              options={{ title: "Dog Meetup" }}
+              options={{
+                headerShown: false,
+              }}
             />
             <Stack.Screen
               name="Add"
@@ -123,32 +125,29 @@ export class App extends Component {
             <Stack.Screen
               name="ChatScreen"
               component={ChatScreen}
-              options={({route}) => ({
+              options={({ route }) => ({
                 headerTitle: route.params.userName,
                 headerBackTitleVisible: false,
-                
               })}
             />
 
-             <Stack.Screen
+            <Stack.Screen
               name="Followingscreen"
               component={Following}
-              options={({route}) => ({
+              options={({ route }) => ({
                 headerTitle: "Your Following list",
                 headerBackTitleVisible: false,
               })}
-            />  
+            />
 
-              <Stack.Screen
+            <Stack.Screen
               name="Followerscreen"
               component={Follower}
-              options={({route}) => ({
+              options={({ route }) => ({
                 headerTitle: "Your Follower list",
                 headerBackTitleVisible: false,
               })}
-            /> 
-
-
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </Provider>
@@ -176,11 +175,10 @@ export async function getPosts(uid) {
 export async function deletePost(docID) {
   //double check that the current user is authorized to delete the post
   const postdata = await db.collection("posts").doc(docID).get();
-  if(postdata.data().userID == firebase.auth().currentUser.uid){
+  if (postdata.data().userID == firebase.auth().currentUser.uid) {
     await db.collection("posts").doc(docID).delete();
   }
   return;
-  
 }
 
 export async function getUserName(uid) {
@@ -193,17 +191,27 @@ export async function getUserName(uid) {
     });
 }
 
-export async function followEvent(uid,eventID){
-  await db.collection("EventsFollowing").doc(uid).collection("events").doc(eventID).set({id:eventID});
+export async function followEvent(uid, eventID) {
+  await db
+    .collection("EventsFollowing")
+    .doc(uid)
+    .collection("events")
+    .doc(eventID)
+    .set({ id: eventID });
   return;
 }
 
-export async function unfollowEvent(uid,eventID){
-  await db.collection("EventsFollowing").doc(uid).collection("events").doc(eventID).delete();
+export async function unfollowEvent(uid, eventID) {
+  await db
+    .collection("EventsFollowing")
+    .doc(uid)
+    .collection("events")
+    .doc(eventID)
+    .delete();
   return;
 }
 
-export async function createEvent(eventData){
+export async function createEvent(eventData) {
   //expected eventData Schema:
   /*{
     description: <string>,
@@ -218,24 +226,27 @@ export async function createEvent(eventData){
   return;
 }
 
-export async function deleteEvent(eventID){
+export async function deleteEvent(eventID) {
   //double check that the current user is authorized to delete the post
   const event = await db.collection("Events").doc(eventID).get();
-  if(event.data().userID == firebase.auth().currentUser.uid){
+  if (event.data().userID == firebase.auth().currentUser.uid) {
     await db.collection("Events").doc(eventID).delete();
   }
   return;
 }
 
-export async function getEvents(pastEvents = false){
+export async function getEvents(pastEvents = false) {
   var query = db.collection("Events");
-  if(pastEvents){
+  if (pastEvents) {
     //Dig through events that already happened, newest to oldest
-    query = query.where("eventTime","<",Date.now()).orderBy("eventTime","desc");
-  }
-  else{
+    query = query
+      .where("eventTime", "<", Date.now())
+      .orderBy("eventTime", "desc");
+  } else {
     //Get upcoming events, soonest to farthest out
-    query = query.where("eventTime",">",Date.now()).orderBy("eventTime","asc");
+    query = query
+      .where("eventTime", ">", Date.now())
+      .orderBy("eventTime", "asc");
   }
   return query.get().then((snapshot) => {
     var events = [];
@@ -249,22 +260,25 @@ export async function getEvents(pastEvents = false){
   });
 }
 
-export async function getFollowedEvents(follower,pastEvents = false){
+export async function getFollowedEvents(follower, pastEvents = false) {
   //grab the list of followed events
-  const eventIDs = await db.collection("EventsFollowing")
-                           .doc(follower)
-                           .collection("events")
-                           .get()
-                           .then((docs) => {
-                              var idList = []
-                              docs.forEach(doc => {
-                                idList.append(doc.id);
-                              });
-                              return idList;
-                           });
+  const eventIDs = await db
+    .collection("EventsFollowing")
+    .doc(follower)
+    .collection("events")
+    .get()
+    .then((docs) => {
+      var idList = [];
+      docs.forEach((doc) => {
+        idList.append(doc.id);
+      });
+      return idList;
+    });
   //use the event list to query for the related events (document id is in the list of event ids)
-  var query = db.collection("Events").where(firebase.firestore.FieldPath.documentId(),'in',eventIDs);
-  
+  var query = db
+    .collection("Events")
+    .where(firebase.firestore.FieldPath.documentId(), "in", eventIDs);
+
   //execute
   return query.get().then((snapshot) => {
     var events = [];
@@ -276,7 +290,6 @@ export async function getFollowedEvents(follower,pastEvents = false){
 
     return events;
   });
-   
 }
 
 export default App;
