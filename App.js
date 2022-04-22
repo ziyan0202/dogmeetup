@@ -191,26 +191,60 @@ export async function getUserName(uid) {
     });
 }
 
+///////////////////////////////////////////////
+//
+//    Event Backend Functions:   <"search code">
+//        -followEvent (string userID, string eventID) <eb1>
+//        -unfollowEvent (string userID, string eventID) <eb2>
+//        -createEvent(object eventData) <eb3>
+//            -expected object schema commented in the function
+//        -deleteEvent(string eventID) <eb4>
+//        -getEvents(bool pastEvents) <eb5>
+//        -getFollowedEvents(string followerID, bool pastEvents) <eb6>
+//        -getEvent(string eventID) <eb7>
+//
+////////////////////////////////////////////////
+
+//Sets a user to follow an event by ID <eb1>
 export async function followEvent(uid, eventID) {
+  //Set it in user-first Event's Following collection
   await db
     .collection("EventsFollowing")
     .doc(uid)
     .collection("events")
     .doc(eventID)
     .set({ id: eventID });
+  //Set it in the Event's followers array
+  await db
+    .collection("Events")
+    .doc(eventID)
+    .update({
+      followers: FieldValue.arrayUnion(uid)
+    });
   return;
 }
 
+//Takes a user off an event's follow list and vice versa <eb2>
 export async function unfollowEvent(uid, eventID) {
+  //Remove it from user-first Events Following collection
   await db
     .collection("EventsFollowing")
     .doc(uid)
     .collection("events")
     .doc(eventID)
     .delete();
+  // Remove from event's Followers collection
+  await db
+    .collection("Events")
+    .doc(eventID)
+    .update({
+      followers: FieldValue.arrayUnion(uid)
+    });
   return;
 }
 
+//Takes an object of event data (presumably from a form) and puts it in the database <eb3>
+//   the event's creator follows it by default
 export async function createEvent(eventData) {
   //expected eventData Schema:
   /*{
@@ -222,10 +256,17 @@ export async function createEvent(eventData) {
     name: <string>,
     userId: <string>
   }*/
-  await db.collection("Events").add(eventData);
+  //Make sure the followers array is there
+  eventData.followers = [firebase.auth().currentUser.uid];
+  //Create the event
+  const newEvent = await db.collection("Events").add(eventData);
+  //Officially have the creator follow the event
+  followEvent(firebase.auth().currentUser.uid,newEvent);
+
   return;
 }
 
+//Delete an event by ID <eb4>
 export async function deleteEvent(eventID) {
   //double check that the current user is authorized to delete the post
   const event = await db.collection("Events").doc(eventID).get();
@@ -235,6 +276,7 @@ export async function deleteEvent(eventID) {
   return;
 }
 
+//Get a list of events either from the past or the future <eb5>
 export async function getEvents(pastEvents = false) {
   var query = db.collection("Events");
   if (pastEvents) {
@@ -254,12 +296,16 @@ export async function getEvents(pastEvents = false) {
       //console.log(doc.data());
       events.push(doc.data());
       events[posts.length - 1].id = doc.id;
+      if(firebase.auth().currentUser.uid in doc.data().followers){
+        events[posts.length - 1].isFollowing = true;
+      }
     });
 
     return events;
   });
 }
 
+//Same as getEvents, but only pull events that a certain user is following <eb6>
 export async function getFollowedEvents(follower, pastEvents = false) {
   //grab the list of followed events
   const eventIDs = await db
@@ -279,6 +325,17 @@ export async function getFollowedEvents(follower, pastEvents = false) {
     .collection("Events")
     .where(firebase.firestore.FieldPath.documentId(), "in", eventIDs);
 
+  if (pastEvents) {
+    //Dig through events that already happened, newest to oldest
+    query = query
+      .where("eventTime", "<", Date.now())
+      .orderBy("eventTime", "desc");
+  } else {
+    //Get upcoming events, soonest to farthest out
+    query = query
+      .where("eventTime", ">", Date.now())
+      .orderBy("eventTime", "asc");
+  }
   //execute
   return query.get().then((snapshot) => {
     var events = [];
@@ -286,10 +343,23 @@ export async function getFollowedEvents(follower, pastEvents = false) {
       //console.log(doc.data());
       events.push(doc.data());
       events[posts.length - 1].id = doc.id;
+      if(firebase.auth().currentUser.uid in doc.data().followers){
+        events[posts.length - 1].isFollowing = true;
+      }
     });
 
     return events;
   });
+}
+
+//Get data of a single event by ID <eb7>
+export async function getEvent(eventID){
+  return db
+    .collection("Events")
+    .doc(eventID)
+    .then(doc =>{
+      return doc.data();
+    });
 }
 
 export default App;
