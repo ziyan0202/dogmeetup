@@ -76,6 +76,7 @@ export default function Feed(props) {
           borderBottomWidth: 0.1,
         }}
       >
+        {/* View space between posts */}
         <View
           style={{
             flexDirection: "row",
@@ -84,16 +85,25 @@ export default function Feed(props) {
             padding: 15,
           }}
         >
+          {/* View of user profile and username */}
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
             }}
           >
-            <Image
-              source={require("../../images/defaultUserImg.png")}
-              style={{ width: 40, height: 40, borderRadius: 100 }}
-            />
+            <TouchableOpacity
+              onPress={() =>
+                props.navigation.navigate("Profile", {
+                  uid: obj.userID,
+                })
+              }
+            >
+              <Image
+                source={require("../../images/defaultUserImg.png")}
+                style={{ width: 40, height: 40, borderRadius: 100 }}
+              />
+            </TouchableOpacity>
             <View style={{ paddingLeft: 5 }}>
               <Text
                 style={{ fontSize: 15, fontWeight: "bold" }}
@@ -106,77 +116,107 @@ export default function Feed(props) {
                 {obj.userName}
               </Text>
             </View>
+            {/* View of user profile and user name end */}
           </View>
         </View>
-        <View
-          style={{
-            position: "relative",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+        <TouchableOpacity
+          onPress={() =>
+            props.navigation.navigate("EventDetailsScreen", {
+              uid: obj.userID,
+            })
+          }
         >
-          <Image
-            style={{ width: "100%", height: 400 }}
-            source={{ uri: obj.contentURL }}
-            // props.navigation.navigate("Profile", {
+          <View
+            style={{
+              position: "relative",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Image
+              style={{
+                height: 400,
+                width: "100%",
+                borderTopLeftRadius: 15,
+                borderTopRightRadius: 15,
+              }}
+              source={{ uri: obj.contentURL }}
+              // props.navigation.navigate("Profile", {
 
-            // })
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            paddingHorizontal: 12,
-            paddingVertical: 15,
-          }}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TouchableOpacity onPress={() => setLike(!like)}>
-              <AntDesign
-                name={like ? "heart" : "hearto"}
+              // })
+            />
+            <View style={styles.cardDetails}>
+              <View
                 style={{
-                  paddingRight: 10,
-                  fontSize: 20,
-                  color: like ? "red" : "black",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                 }}
-              />
-            </TouchableOpacity>
+              >
+                <View>
+                  <Text style={{ fontWeight: "bold", fontSize: 17 }}>
+                    {obj.caption}
+                  </Text>
+                  <Text style={{ color: "grey", fontSize: 12 }}>Location</Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginTop: 10,
+                }}
+              >
+                <Text style={{ fontSize: 10, color: "grey" }}>
+                  365 followers
+                </Text>
+              </View>
+            </View>
           </View>
-        </View>
-        <View stype={{ paddingHorizontal: 15 }}>
-          {/* <Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              paddingHorizontal: 12,
+              paddingVertical: 15,
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <TouchableOpacity onPress={() => setLike(!like)}>
+                <AntDesign
+                  name={like ? "heart" : "hearto"}
+                  style={{
+                    paddingRight: 10,
+                    fontSize: 20,
+                    color: like ? "red" : "black",
+                  }}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View stype={{ paddingHorizontal: 15 }}>
+            {/* <Text>
             Liked by {like ? "you and" : ""}{" "}
             {like ? data.likes + 1 : data.likes} others
           </Text> */}
-          <Text
-            style={{
-              fontWeight: "700",
-              fontSize: 14,
-              paddingVertical: 2,
-              paddingLeft: 15,
-            }}
-          >
-            {obj.caption}
-          </Text>
 
-          {props.targetUser == firebase.auth().currentUser.uid ? (
-            <Button
-              color={buttonColor}
-              title="Delete"
-              onPress={() => onDelete(obj.id)}
-            />
-          ) : (
-            <></>
-          )}
-        </View>
+            {props.targetUser == firebase.auth().currentUser.uid ? (
+              <Button
+                color={buttonColor}
+                title="Delete"
+                onPress={() => onDelete(obj.id)}
+              />
+            ) : (
+              <></>
+            )}
+          </View>
 
-        {/* User profile picture */}
-        {/* <UserImg source={{uri: obj.userImg}} /> */}
-        {/* <PostTime>{moment(obj.postTime.toDate()).fromNow()}</PostTime> */}
+          {/* User profile picture */}
+          {/* <UserImg source={{uri: obj.userImg}} /> */}
+          {/* <PostTime>{moment(obj.postTime.toDate()).fromNow()}</PostTime> */}
 
-        <View style={styles.profile_post}></View>
+          <View style={styles.profile_post}></View>
+        </TouchableOpacity>
       </View>
     );
   });
@@ -246,6 +286,15 @@ const styles = StyleSheet.create({
     letterSpacing: 0.25,
     color: "black",
     alignSelf: "center",
+  },
+  cardDetails: {
+    height: 100,
+    borderRadius: 15,
+    backgroundColor: "white",
+    position: "absolute",
+    bottom: 0,
+    padding: 20,
+    width: "100%",
   },
 });
 

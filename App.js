@@ -20,6 +20,7 @@ import AddScreen from "./components/main/Add";
 import SaveScreen from "./components/main/Save";
 import EditProfileScreen from "./components/main/EditProfileScreen";
 import ChatScreen from "./components/main/ChatScreen";
+import EventDetailsScreen from "./components/main/EventDetailsScreen";
 import Following from "./components/main/Following";
 import Follower from "./components/main/Follower";
 
@@ -107,6 +108,10 @@ export class App extends Component {
               name="Save"
               component={SaveScreen}
               navigation={this.props.navigation}
+            />
+            <Stack.Screen
+              name="EventDetailsScreen"
+              component={EventDetailsScreen}
             />
             <Stack.Screen
               name="EditProfile"
@@ -219,7 +224,7 @@ export async function followEvent(uid, eventID) {
     .collection("Events")
     .doc(eventID)
     .update({
-      followers: FieldValue.arrayUnion(uid)
+      followers: FieldValue.arrayUnion(uid),
     });
   return;
 }
@@ -238,7 +243,7 @@ export async function unfollowEvent(uid, eventID) {
     .collection("Events")
     .doc(eventID)
     .update({
-      followers: FieldValue.arrayUnion(uid)
+      followers: FieldValue.arrayUnion(uid),
     });
   return;
 }
@@ -261,7 +266,7 @@ export async function createEvent(eventData) {
   //Create the event
   const newEvent = await db.collection("Events").add(eventData);
   //Officially have the creator follow the event
-  followEvent(firebase.auth().currentUser.uid,newEvent);
+  followEvent(firebase.auth().currentUser.uid, newEvent);
 
   return;
 }
@@ -296,7 +301,7 @@ export async function getEvents(pastEvents = false) {
       //console.log(doc.data());
       events.push(doc.data());
       events[posts.length - 1].id = doc.id;
-      if(firebase.auth().currentUser.uid in doc.data().followers){
+      if (firebase.auth().currentUser.uid in doc.data().followers) {
         events[posts.length - 1].isFollowing = true;
       }
     });
@@ -343,7 +348,7 @@ export async function getFollowedEvents(follower, pastEvents = false) {
       //console.log(doc.data());
       events.push(doc.data());
       events[posts.length - 1].id = doc.id;
-      if(firebase.auth().currentUser.uid in doc.data().followers){
+      if (firebase.auth().currentUser.uid in doc.data().followers) {
         events[posts.length - 1].isFollowing = true;
       }
     });
@@ -353,11 +358,11 @@ export async function getFollowedEvents(follower, pastEvents = false) {
 }
 
 //Get data of a single event by ID <eb7>
-export async function getEvent(eventID){
+export async function getEvent(eventID) {
   return db
     .collection("Events")
     .doc(eventID)
-    .then(doc =>{
+    .then((doc) => {
       return doc.data();
     });
 }

@@ -8,6 +8,8 @@ require("firebase/firebase-storage");
 
 export default function Save(props) {
   const [caption, setCaption] = useState("");
+  const [location, setLocation] = useState("");
+  const [details, setDetails] = useState("");
 
   //Upload process
   const uploadImage = async () => {
@@ -44,6 +46,8 @@ export default function Save(props) {
       .add({
         contentURL: downloadURL, //
         caption,
+        details,
+        location,
         contentType: "image", //This is generalized so we can support "Location" for events
         timePosted: firebase.firestore.FieldValue.serverTimestamp(),
         userID: firebase.auth().currentUser.uid,
@@ -60,9 +64,20 @@ export default function Save(props) {
       <Image source={{ uri: props.route.params.image }} />
       <TextInput
         style={styles.input}
-        placeholder="Write a Caption..."
+        placeholder="Event title"
         onChangeText={(caption) => setCaption(caption)}
       />
+      <TextInput
+        style={styles.input}
+        placeholder="Event location"
+        onChangeText={(location) => setLocation(location)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Event details"
+        onChangeText={(details) => setDetails(details)}
+      />
+
       <Button title="Save" onPress={() => uploadImage()} />
     </View>
   );

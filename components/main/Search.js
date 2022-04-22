@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import firebase from "firebase";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 require("firebase/firestore");
 
 export default function Search(props) {
@@ -32,11 +33,14 @@ export default function Search(props) {
   return (
     <View>
       {/* whenever the user type a letter fetchUsers will be called */}
-      <TextInput
-        style={styles.input}
-        placeholder="Type Here..."
-        onChangeText={(search) => fetchUsers(search)}
-      />
+      <View style={styles.searchInputContainer}>
+        <Icon name="magnify" size={30} style={{ marginLeft: 20 }} />
+        <TextInput
+          style={{ fontSize: 20, paddingLeft: 10 }}
+          placeholder="Search"
+          onChangeText={(search) => fetchUsers(search)}
+        />
+      </View>
       <FlatList
         numColumns={1}
         horizontal={false}
@@ -70,5 +74,15 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     paddingLeft: 10,
     paddingTop: 10,
+  },
+  searchInputContainer: {
+    height: 50,
+    backgroundColor: "white",
+    marginTop: 15,
+    marginLeft: 20,
+    marginRight: 20,
+    borderRadius: 30,
+    flexDirection: "row",
+    alignItems: "center",
   },
 });
