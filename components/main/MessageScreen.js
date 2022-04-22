@@ -6,42 +6,65 @@ import { Card } from 'react-native-paper';
 import { SyntheticPlatformEmitter } from 'expo-modules-core';
 import Messagepost from './Messagepost';
 import { set } from "react-native-reanimated";
-
+import { ScrollView } from "react-native-gesture-handler";
 
 const Message = (props) => {
     //const { navigation } = props;
     const[message,SetMessage] = useState([]);
     const[users,SetUsers] = useState([]);
+    const[currentname, SetCurrentname] = useState();
     
     const db =firebase.firestore()
     // const { currentUser} = props;
     // SetUsers(currentUser)
   
   useEffect(() => {
-    const subscribe =db.collection('Chat').onSnapshot((snapshot) => {
+    const sub =db.collection('users').doc( firebase.auth().currentUser.uid).onSnapshot((snapshot) => {
+      SetCurrentname(snapshot.data().name)
+    })
+    const subscribe =db.collection('Chat').orderBy('createdAt','desc').onSnapshot((snapshot) => {
+      var userArray =[];
+      var messageArray=[];
+      
+      snapshot.docs.forEach(doc =>{
+        console.log(doc.data());
+        var othername;
+        if(doc.data().user.name == currentname){
+          othername = doc.data().user.fromname
+        }else{
+          othername = doc.data().user.name
+        }
 
-      SetMessage(snapshot.docs.map(doc =>({
-        id:doc.id,
-        messagepost:doc.data()
-      })))
+        if(userArray.indexOf(othername) == -1) {
+          messageArray.push({
+               id:doc.id,
+               messagepost:doc.data()
+          })
+          userArray.push(othername);
+          SetUsers(userArray);
+          console.log(userArray)
+        }
+
+      });
+      SetMessage(messageArray);
     })
      
     return ()=>subscribe();
   }, []);
 
-
-  
+ console.log(message)
 
   return (
+    <ScrollView scrollEnabled>
     <View style = {styles.container}>
-      {
+    {  
       message.map(({id,messagepost})=>(
-
         <Messagepost  
             text={messagepost.text} 
             user={messagepost.user.name}
             fromid={messagepost.user.from}
             fromname={messagepost.user.fromname}
+            namelist={users}
             to={messagepost.user._id}
             id={id}
             img={messagepost.user.avatar}
@@ -51,6 +74,7 @@ const Message = (props) => {
       ))
       } 
     </View>
+    </ScrollView>
   );
 };
 

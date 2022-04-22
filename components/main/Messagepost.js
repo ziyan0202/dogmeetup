@@ -10,17 +10,18 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {getUserName} from "../../App.js"
 
 
-
-
-const Postmessage = ({text,id,user,fromid,to,time,img,prop,fromname}) => {
+let n=0
+let nameList=[]
+const Postmessage = ({text,id,user,fromid,to,time,img,prop,fromname,userlist}) => {
 
  const db =firebase.firestore()
+ const [userss, SetUserss] =useState([])
+ const [test, Settest] =useState(new Set())
    
-  
+
      useEffect(() => {
-       
-        
-      },[]);
+      
+      },[fromid]);
 
 
     const currentemail =firebase.auth().currentUser.email;
@@ -33,7 +34,7 @@ const Postmessage = ({text,id,user,fromid,to,time,img,prop,fromname}) => {
     return (         
         <View style = {styles.container}>
 
-            { (firebase.auth().currentUser.uid == to) &&
+            { (firebase.auth().currentUser.uid == to ||firebase.auth().currentUser.uid == fromid) &&
             
             <View style={styles.card} >
                 <View style={styles.UserInfo}>
@@ -44,7 +45,11 @@ const Postmessage = ({text,id,user,fromid,to,time,img,prop,fromname}) => {
                 /></View>
                 <View style = {styles.Textsection}>
                 <View style = {styles.UserInfoText}>
-                <Text style = {styles.UserName}>{fromname}:</Text>
+                  {
+                    (firebase.auth().currentUser.uid == fromid) ? <Text style = {styles.UserName}>{user}</Text> : 
+                    <Text style = {styles.UserName}>{fromname}</Text>
+                  }
+                {/* <Text style = {styles.UserName}>{fromname}:</Text> */}
                 {/* <Text style = {styles.PostTime}>{time}</Text> */}
 
                 </View> 
@@ -73,11 +78,13 @@ const styles = StyleSheet.create({
  
     },
     card:{
-      width :'100%'
+      width :'100%',
+      borderBottomWidth: 1,
     },
     UserInfo: {
       flexDirection: "row",
       justifyContent:"space-between",
+      
  
     },
     ImgWrapper: {
@@ -86,12 +93,12 @@ const styles = StyleSheet.create({
     },
     Textsection: {
       flexDirection :"column",
-      justifyContent: "center",
+      // justifyContent: "center",
       padding: 15,
       paddingLeft: 0,
       marginLeft: 10,
       width: 300,
-      borderBottomWidth: 1,
+      
     },
     UserInfoText: {
       flexDirection:"row",
@@ -102,7 +109,8 @@ const styles = StyleSheet.create({
       fontSize: 12,
       fontWeight:"bold",
       display:"flex",
-      marginBottom:10
+      marginTop:10,
+      // marginBottom:10
     },
     PostTime: {
       fontSize: 12,
