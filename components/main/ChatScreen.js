@@ -12,6 +12,9 @@ const Message = (props) => {
     
   const [user,setUser] = useState(null)
   const [name,setName] = useState('')
+  const[currentname, SetCurrentname] = useState();
+ 
+   
   const db = firebase.firestore();
  
   const [messages, setMessages] = useState([])
@@ -41,6 +44,12 @@ const Message = (props) => {
     })
     return ()=>subscribe();
   }, []);
+
+ 
+    db.collection('users').doc( firebase.auth().currentUser.uid).onSnapshot((snapshot) => {
+      SetCurrentname(snapshot.data().name)
+    })
+   
   
 
   const onSend = useCallback((messages =[]) => {
@@ -81,7 +90,8 @@ const Message = (props) => {
         _id:props.route.params.id,
         from:props.route.params.current,
         name: props.route.params.userName,
-        avatar:'https://placeimg.com/140/140/any'
+        avatar:'https://placeimg.com/140/140/any',
+        fromname: currentname
         
      }}
      alwaysShowSend

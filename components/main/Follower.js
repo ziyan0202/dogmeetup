@@ -13,6 +13,7 @@ const Follower = (props) => {
     const list = db.collection('follower').doc(profile_id).collection('userFollower').onSnapshot((snapshot) =>{
       SetFollowlist(snapshot.docs.map(doc =>({
         follower_id:doc.id,
+        name:doc.data().name,
       })))
 
     })
@@ -21,14 +22,14 @@ const Follower = (props) => {
 
  
   return (
-    followlist.map (({follower_id})=>(
+    followlist.map (({follower_id,name})=>(
       <View style={styles.text} >
         <Text onPress={() =>
         props.navigation.navigate("Profile", {
            uid: follower_id,
         })
         
-      }>{follower_id}</Text>
+      }>{name}</Text>
       </View>
       
     ))

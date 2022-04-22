@@ -24,9 +24,6 @@ const Message = (props) => {
         id:doc.id,
         messagepost:doc.data()
       })))
-
-   
-
     })
      
     return ()=>subscribe();
@@ -44,6 +41,7 @@ const Message = (props) => {
             text={messagepost.text} 
             user={messagepost.user.name}
             fromid={messagepost.user.from}
+            fromname={messagepost.user.fromname}
             to={messagepost.user._id}
             id={id}
             img={messagepost.user.avatar}

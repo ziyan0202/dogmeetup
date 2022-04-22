@@ -13,6 +13,7 @@ const Following = (props) => {
     const list = db.collection('following').doc(profile_id).collection('userFollowing').onSnapshot((snapshot) =>{
       SetFollowlist(snapshot.docs.map(doc =>({
         following_id:doc.id,
+        name:doc.data().name,
       })))
 
     })
@@ -22,7 +23,7 @@ const Following = (props) => {
   const img = { uri: "https://reactjs.org/logo-og.png" };
   return (
     
-      followlist.map (({following_id})=>(  
+      followlist.map (({following_id,name})=>(  
         
         <SafeAreaView style={styles.container}>  
        
@@ -35,7 +36,7 @@ const Following = (props) => {
         <Text  style={styles.text} onPress={() =>
         props.navigation.navigate("Profile", {
           uid: following_id,
-        })}>{following_id}</Text>
+        })}>{name}</Text>
        
           </SafeAreaView>      
     ))   

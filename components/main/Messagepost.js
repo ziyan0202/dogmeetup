@@ -4,35 +4,24 @@ import {View, Image,Text,StyleSheet,TouchableOpacity,FlatList} from 'react-nativ
 import React, { useEffect, useState } from "react";
 import { Card } from 'react-native-paper';
 import { SyntheticPlatformEmitter } from 'expo-modules-core';
-import {db} from './MessageScreen'
+// import {db} from './MessageScreen'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {getUserName} from "../../App.js"
 
-const Postmessage = ({text,id,user,fromid,to,time,img,prop}) => {
 
- const[users,SetUsers] = useState([]);
 
-    useEffect (()=> {
-        // if(id){
-        //   return ()=>{
-        //     db
-        //      .collection('Chat')
-        //       .doc(id)
-        //       .collection('text')
-        //     //   .orderBy('timestamp','asc')
-        //       .onSnapshot((snapshot) => {
-        //         setComments(snapshot.docs.map((doc) => doc.data()))
-        //       })
-        //   }
-        // }
+
+const Postmessage = ({text,id,user,fromid,to,time,img,prop,fromname}) => {
+
+ const db =firebase.firestore()
    
-     },[id])
-    
-
-    //   console.log(Object.keys(naame).length)
   
-    //SetUsers(currentUser)
+     useEffect(() => {
+       
+        
+      },[]);
+
 
     const currentemail =firebase.auth().currentUser.email;
 
@@ -55,7 +44,7 @@ const Postmessage = ({text,id,user,fromid,to,time,img,prop}) => {
                 /></View>
                 <View style = {styles.Textsection}>
                 <View style = {styles.UserInfoText}>
-                <Text style = {styles.UserName}>{fromid}:</Text>
+                <Text style = {styles.UserName}>{fromname}:</Text>
                 {/* <Text style = {styles.PostTime}>{time}</Text> */}
 
                 </View> 

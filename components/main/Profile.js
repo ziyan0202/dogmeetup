@@ -17,7 +17,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 require("firebase/firestore");
 // import {db} from './MessageScreen'
-
+const bk = require("../../images/bk1.png");
 function Profile(props) {
   //In order to display current user and other user
   const [userPosts, setUserPosts] = useState([]);
@@ -27,6 +27,7 @@ function Profile(props) {
   const[allpost,SetAllpost] = useState([]);
   const[allfollow,SetAllfollow] = useState([]);
   const[allfollower,SetAllfollower] = useState([]);
+  const[currentname, SetCurrentname] = useState();
 
   const db =firebase.firestore()
   useEffect(() => {
@@ -40,30 +41,16 @@ function Profile(props) {
   return ()=>subscribe();
   },[]);
 
-  // const f =
-  // db.collection('following').doc(props.route.params.uid).collection("userFollowing").onSnapshot((snapshot) => {
-  //   SetAllfollow(snapshot.docs.map(doc =>({
-  //     follow:doc
-  //   })))
-  // })
-   
-  //  db.collection('follower').doc(props.route.params.uid).collection("userFollower").onSnapshot((snapshot) => {
-  //   SetAllfollower(snapshot.docs.map(doc =>({
-  //     follower:doc
-  //   })))
-  // })
-
-
-  //followernum();
-
-
-  //  console.log("ss"+allfollow)
-
-
+ //get current user name
+  useEffect(() => {
+    const sub =db.collection('users').doc( firebase.auth().currentUser.uid).onSnapshot((snapshot) => {
+      SetCurrentname(snapshot.data().name)
+    })
+    return ()=>sub();
+    },[firebase.auth().currentUser.uid]);
+    //console.log(firebase.auth().currentUser)
 
   const post_num=allpost.length;
-
- 
 
   useEffect(() => {
     const { currentUser, posts } = props;
@@ -83,11 +70,6 @@ function Profile(props) {
     })))
   })
   //follow
-
-
-
-
-
 
     if (props.route.params.uid === firebase.auth().currentUser.uid) {
       setUser(currentUser);
@@ -145,7 +127,9 @@ function Profile(props) {
       .doc(props.route.params.uid)
       .collection("userFollower")
       .doc(firebase.auth().currentUser.uid)
-      .set({});
+      .set({
+         name:currentname
+      });
   };
 
   const UnFollower = () => {
@@ -160,11 +144,6 @@ function Profile(props) {
 
   };
 
-
-
-
-
-
   //Follow and Unfollow functions
   const onFollow = () => {
     //Following the firebase firestore structure
@@ -174,8 +153,9 @@ function Profile(props) {
       .doc(firebase.auth().currentUser.uid)
       .collection("userFollowing")
       .doc(props.route.params.uid)
-      .set({});
-
+      .set({
+        name: user.name
+      });
       Follower()
   };
 
@@ -200,7 +180,7 @@ function Profile(props) {
   return (
     //style
     <SafeAreaView style={styles.container}>
-      
+      <ImageBackground source={bk} resizeMode="cover" style={styles.imagebackground}>
       <ScrollView
         style={styles.containerInfo}
         contentContainerStyle={{
@@ -208,7 +188,7 @@ function Profile(props) {
           alignItems: 'center'
         }}
       >
-        {/* <ImageBackground source={image} resizeMode="stretch" style={styles.imagebackground}> */}
+        
         <Image
           style={styles.userImg}
           source={require("../../images/defaultUserImg.png")}
@@ -295,8 +275,9 @@ function Profile(props) {
           key={props.route.params.uid}
           targetUser={props.route.params.uid}
         ></Feed>
-         {/* </ImageBackground> */}
+         
       </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 }
@@ -315,9 +296,9 @@ const styles = StyleSheet.create({
   },
   containerInfo: {
     // backgroundColor: "#fff",
-    backgroundColor: '#dbfbed',
-    
-    padding: 20,
+    //backgroundColor: '#dbfbed',
+    marginRight:20,
+    padding: 30,
   },
   containerGallery: {
     flex: 1,
@@ -385,8 +366,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   imagebackground:{
-    flex: 1,
-    justifyContent: "center"
+    flex:1,
+    alignItems:'center',
+    justifyContent: 'center',
   }
 });
 export default connect(mapStateToProps, null)(Profile);
