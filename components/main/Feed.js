@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getPosts, deletePost, getUserName } from "../../App.js";
+import { getEvents, getCreatedEvents, deleteEvent, getFollowedEvents, followEvent, unfollowEvent } from "../../App.js";
 import {
   View,
   Text,
@@ -23,14 +23,19 @@ export default function Feed(props) {
   const [like, setLike] = useState([]);
 
   const _getPosts = async () => {
+    if (props.targetUser == firebase.auth().currentUser.uid){
+      const posts = await getFollowedEvents(props.targetUser);
+      console.log("POSTS(f)")
+      setPosts(posts);
+    }
     if (props.targetUser !== undefined) {
       // console.log(props.targetUser);
-      const posts = await getPosts(props.targetUser);
-      //console.log("POSTS", posts);
+      const posts = await getCreatedEvents(props.targetUser);
+      console.log("POSTS(c)", posts);
       setPosts(posts);
     } else {
-      const posts = await getPosts();
-      //console.log("POSTS", posts);
+      const posts = await getEvents();
+      console.log("POSTS(g)", posts);
       setPosts(posts);
     }
   };
@@ -48,9 +53,8 @@ export default function Feed(props) {
 
   const onDelete = async (docID) => {
     /*If we want a confirmation of delete, it goes here, then delete post can be in an onConfirmation event*/
-    await deletePost(docID);
-    const posts = await getPosts(props.targetUser);
-    setPosts(posts);
+    await deleteEvent(docID);
+    _getPosts();
   };
 
   const postcomment = (e) => {
@@ -122,7 +126,7 @@ export default function Feed(props) {
         <TouchableOpacity
           onPress={() =>
             props.navigation.navigate("EventDetailsScreen", {
-              uid: obj.userID,
+              eid: obj.id,
             })
           }
         >
@@ -140,7 +144,7 @@ export default function Feed(props) {
                 borderTopLeftRadius: 15,
                 borderTopRightRadius: 15,
               }}
-              source={{ uri: obj.contentURL }}
+              source={{ uri: obj.image }}
               // props.navigation.navigate("Profile", {
 
               // })
@@ -154,9 +158,9 @@ export default function Feed(props) {
               >
                 <View>
                   <Text style={{ fontWeight: "bold", fontSize: 17 }}>
-                    {obj.caption}
+                    {obj.description}
                   </Text>
-                  <Text style={{ color: "grey", fontSize: 12 }}>Location</Text>
+                  <Text style={{ color: "grey", fontSize: 12 }}>{obj.eventLocation}</Text>
                 </View>
               </View>
               <View
@@ -167,7 +171,7 @@ export default function Feed(props) {
                 }}
               >
                 <Text style={{ fontSize: 10, color: "grey" }}>
-                  365 followers
+                  {obj.followers.length} followers
                 </Text>
               </View>
             </View>

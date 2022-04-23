@@ -287,12 +287,12 @@ export async function getEvents(pastEvents = false) {
   if (pastEvents) {
     //Dig through events that already happened, newest to oldest
     query = query
-      .where("eventTime", "<", Date.now())
+      .where("eventTime", "<", firebase.firestore.Timestamp.now())
       .orderBy("eventTime", "desc");
   } else {
     //Get upcoming events, soonest to farthest out
     query = query
-      .where("eventTime", ">", Date.now())
+      .where("eventTime", ">", firebase.firestore.Timestamp.now())
       .orderBy("eventTime", "asc");
   }
   return query.get().then((snapshot) => {
@@ -300,9 +300,9 @@ export async function getEvents(pastEvents = false) {
     snapshot.forEach((doc) => {
       //console.log(doc.data());
       events.push(doc.data());
-      events[posts.length - 1].id = doc.id;
+      events[events.length - 1].id = doc.id;
       if (firebase.auth().currentUser.uid in doc.data().followers) {
-        events[posts.length - 1].isFollowing = true;
+        events[events.length - 1].isFollowing = true;
       }
     });
 
@@ -312,33 +312,20 @@ export async function getEvents(pastEvents = false) {
 
 //Same as getEvents, but only pull events that a certain user is following <eb6>
 export async function getFollowedEvents(follower, pastEvents = false) {
-  //grab the list of followed events
-  const eventIDs = await db
-    .collection("EventsFollowing")
-    .doc(follower)
-    .collection("events")
-    .get()
-    .then((docs) => {
-      var idList = [];
-      docs.forEach((doc) => {
-        idList.append(doc.id);
-      });
-      return idList;
-    });
   //use the event list to query for the related events (document id is in the list of event ids)
   var query = db
     .collection("Events")
-    .where(firebase.firestore.FieldPath.documentId(), "in", eventIDs);
+    .where("followers", "array-contains", follower);
 
   if (pastEvents) {
     //Dig through events that already happened, newest to oldest
     query = query
-      .where("eventTime", "<", Date.now())
+      .where("eventTime", "<", firebase.firestore.Timestamp.now())
       .orderBy("eventTime", "desc");
   } else {
     //Get upcoming events, soonest to farthest out
     query = query
-      .where("eventTime", ">", Date.now())
+      .where("eventTime", ">", firebase.firestore.Timestamp.now())
       .orderBy("eventTime", "asc");
   }
   //execute
@@ -347,9 +334,43 @@ export async function getFollowedEvents(follower, pastEvents = false) {
     snapshot.forEach((doc) => {
       //console.log(doc.data());
       events.push(doc.data());
-      events[posts.length - 1].id = doc.id;
+      events[events.length - 1].id = doc.id;
       if (firebase.auth().currentUser.uid in doc.data().followers) {
-        events[posts.length - 1].isFollowing = true;
+        events[events.length - 1].isFollowing = true;
+      }
+    });
+
+    return events;
+  });
+}
+
+//Same as getEvents, but only pull events that a certain user is following <eb6>
+export async function getCreatedEvents(creator, pastEvents = false) {
+  //grab the list of events 
+  const query = await db
+    .collection("Events")
+    .where("userID","==",creator)
+
+  if (pastEvents) {
+    //Dig through events that already happened, newest to oldest
+    query = query
+      .where("eventTime", "<", firebase.firestore.Timestamp.now())
+      .orderBy("eventTime", "desc");
+  } else {
+    //Get upcoming events, soonest to farthest out
+    query = query
+      .where("eventTime", ">", firebase.firestore.Timestamp.now())
+      .orderBy("eventTime", "asc");
+  }
+  //execute
+  return query.get().then((snapshot) => {
+    var events = [];
+    snapshot.forEach((doc) => {
+      //console.log(doc.data());
+      events.push(doc.data());
+      events[events.length - 1].id = doc.id;
+      if (firebase.auth().currentUser.uid in doc.data().followers) {
+        events[events.length - 1].isFollowing = true;
       }
     });
 
