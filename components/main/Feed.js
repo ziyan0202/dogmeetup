@@ -70,6 +70,29 @@ export default function Feed(props) {
     console.log("come on");
   };
 
+    //click likes num
+    const funclike = (e) => {
+      const p =firebase
+        .firestore()
+        .collection("posts")
+        .doc(e);
+        if(like){
+           p.get()
+        .then(()=>{
+             p.update({like:firebase.firestore.FieldValue.increment(-1),heart:false})
+            //  p.update({})
+        })
+        }else{
+          p.get()
+        .then(()=>{
+             p.update({like:firebase.firestore.FieldValue.increment(1),heart:true})
+        })
+        }
+       
+        setLike(!like)
+    };
+  
+
   const postList = posts?.map((obj) => {
     //console.log(obj.userID);
     return (
@@ -186,7 +209,7 @@ export default function Feed(props) {
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <TouchableOpacity onPress={() => setLike(!like)}>
+            <TouchableOpacity onPress={() => funclike(obj.id)}>
                 <AntDesign
                   name={like ? "heart" : "hearto"}
                   style={{
@@ -196,6 +219,7 @@ export default function Feed(props) {
                   }}
                 />
               </TouchableOpacity>
+              <Text>Likes {obj.like}+</Text>
             </View>
           </View>
           <View stype={{ paddingHorizontal: 15 }}>
