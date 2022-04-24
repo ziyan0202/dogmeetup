@@ -251,7 +251,8 @@ export async function unfollowEvent(uid, eventID) {
 
 //Takes an object of event data (presumably from a form) and puts it in the database <eb3>
 //   the event's creator follows it by default
-export async function createEvent(eventData) {
+export async function createEventListing(eventData) {
+  console.log("function reached");
   //expected eventData Schema:
   /*{
     description: <string>,
@@ -263,13 +264,12 @@ export async function createEvent(eventData) {
     userId: <string>
   }*/
   //Make sure the followers array is there
-  eventData.followers = [firebase.auth().currentUser.uid];
+  eventData.followers = [eventData.userID];
+  
   //Create the event
   const newEvent = await db.collection("Events").add(eventData);
   //Officially have the creator follow the event
-  followEvent(firebase.auth().currentUser.uid, newEvent);
-
-  return;
+  await followEvent(firebase.auth().currentUser.uid, newEvent);
 }
 
 //Delete an event by ID <eb4>

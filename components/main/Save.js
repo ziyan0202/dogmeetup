@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, View, TextInput, Image, Button } from "react-native";
 import firebase from "firebase";
 import { NavigationContainer } from "@react-navigation/native";
-import { getUserName } from "../../App";
+import { createEvent, getUserName } from "../../App";
 require("firebase/firestore");
 require("firebase/firebase-storage");
 
@@ -10,6 +10,7 @@ export default function Save(props) {
   const [caption, setCaption] = useState("");
   const [location, setLocation] = useState("");
   const [details, setDetails] = useState("");
+  const [date,setDate] = useState(new Date());
 
   //Upload process
   const uploadImage = async () => {
@@ -39,24 +40,29 @@ export default function Save(props) {
     task.on("state_changed", taskProgress, taskError, taskCompleted);
   };
   const savePostData = async (downloadURL) => {
-    const userName = await getUserName(firebase.auth().currentUser.uid);
-    firebase
-      .firestore()
-      .collection("posts")
-      .add({
-        contentURL: downloadURL, //
-        caption,
-        details,
-        location,
-        contentType: "image", //This is generalized so we can support "Location" for events
-        timePosted: firebase.firestore.FieldValue.serverTimestamp(),
-        userID: firebase.auth().currentUser.uid,
-        userName,
-      })
-      .then(function () {
-        //will go to beginning route of navigator, return to main page
-        props.navigation.popToTop();
-      });
+    console.log("starting save function");
+    const uid = firebase.auth().currentUser.uid
+    const userName = await getUserName(uid);
+
+    ///TEMP: set date automatically until date-timePicker works
+    setDate(new Date(1651239000));
+    ///END TEMP
+
+    const eventData = {
+      description:details,
+      eventName:caption,
+      eventLocation: location,
+      eventTime: date,
+      image: downloadURL,
+      userID: uid,
+      userName,
+    }
+
+    createEvent(eventData)
+    .then(function () {
+      //will go to beginning route of navigator, return to main page
+      props.navigation.popToTop();
+    });
   };
 
   return (
@@ -77,6 +83,10 @@ export default function Save(props) {
         placeholder="Event details"
         onChangeText={(details) => setDetails(details)}
       />
+
+      {/*
+        THIS IS WHERE A DATE TIME PICKER WILL GO
+      */}
 
       <Button title="Save" onPress={() => uploadImage()} />
     </View>
