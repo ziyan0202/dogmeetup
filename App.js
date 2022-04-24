@@ -225,7 +225,7 @@ export async function followEvent(uid, eventID) {
     .collection("Events")
     .doc(eventID)
     .update({
-      followers: FieldValue.arrayUnion(uid),
+      followers: firebase.firestore.FieldValue.arrayUnion(uid),
     });
   return;
 }
@@ -244,14 +244,14 @@ export async function unfollowEvent(uid, eventID) {
     .collection("Events")
     .doc(eventID)
     .update({
-      followers: FieldValue.arrayUnion(uid),
+      followers: firebase.firestore.FieldValue.arrayRemove(uid),
     });
   return;
 }
 
 //Takes an object of event data (presumably from a form) and puts it in the database <eb3>
 //   the event's creator follows it by default
-export async function createEventListing(eventData) {
+export async function createEvent(eventData) {
   console.log("function reached");
   //expected eventData Schema:
   /*{
@@ -382,6 +382,7 @@ export async function getEvent(eventID) {
   return db
     .collection("Events")
     .doc(eventID)
+    .get()
     .then((doc) => {
       return doc.data();
     });

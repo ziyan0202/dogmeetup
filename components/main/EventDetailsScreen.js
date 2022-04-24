@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   Text,
@@ -7,9 +7,48 @@ import {
   ImageBackground,
   View,
 } from "react-native";
+import firebase from "firebase";
+import {followEvent, getEvent, unfollowEvent} from "../../App.js";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-const EventDetailsScreen = () => {
+
+const EventDetailsScreen = (props) => {
+
+  const [title,setTitle] = useState("");
+  const [location,setLocation] = useState("");
+  const [description,setDescription] = useState("");
+  const [uid,setUID] = useState("");
+  const [userName,setUserName] = useState("");
+  const [image,setImage] = useState("");
+  const [followers,setFollowers] = useState([]);
+
+  const  follow = async () => {
+    await followEvent(firebase.auth().currentUser.uid,props.route.params.eid);
+    _getEvent();
+  }
+
+  const unfollow = async () => {
+    await unfollowEvent(firebase.auth().currentUser.uid,props.route.params.eid);
+    _getEvent();
+  }
+  
+  const _getEvent = async () =>{
+    const data = await getEvent(props.route.params.eid);
+    console.log(props.route.params.eid);
+    console.log(data);
+    setTitle(data.eventName);
+    setDescription(data.eventDetails);
+    setLocation(data.eventLocation);
+    setUID(data.userID);
+    setUserName(data.userName);
+    setImage(data.image);
+    setFollowers(data.followers);
+  }
+  
+  useEffect(()=>{
+    _getEvent();
+  },[]);
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -25,12 +64,12 @@ const EventDetailsScreen = () => {
       />
       <ImageBackground
         style={style.headerImage}
-        source={require("../../images/defaultUserImg.png")}
+        source={{uri: image}}
       ></ImageBackground>
       <View>
         {/* view foricon */}
         <View style={{ marginTop: 20, paddingHorizontal: 20 }}>
-          <Text style={{ fontSize: 20, fontWeight: "bold" }}>Event Title</Text>
+          <Text style={{ fontSize: 20, fontWeight: "bold" }}>{title}</Text>
           <Text
             style={{
               fontSize: 12,
@@ -39,7 +78,7 @@ const EventDetailsScreen = () => {
               marginTop: 5,
             }}
           >
-            Event Location
+            {location}
           </Text>
           <View
             style={{
@@ -48,21 +87,29 @@ const EventDetailsScreen = () => {
               justifyContent: "space-between",
             }}
           >
-            <Text style={{ fontSize: 13, color: "grey" }}>365 reviews</Text>
+            <Text style={{ fontSize: 13, color: "grey" }}>{followers.length} attending</Text>
           </View>
           <View
             style={{
               marginTop: 20,
             }}
           >
-            <Text style={{ lineHeight: 20, color: "grey" }}>Details</Text>
+            <Text style={{ lineHeight: 20, color: "grey" }}>{description}</Text>
           </View>
         </View>
-        <View style={style.btn}>
-          <Text style={{ color: "white", fontSize: 18, fontWeight: "bold" }}>
-            Attend
-          </Text>
-        </View>
+        {followers.indexOf(firebase.auth().currentUser.uid) != -1?
+          <View style={style.btnGreen}>
+            <Text style={{ color: "white", fontSize: 18, fontWeight: "bold" }} onPress={() => unfollow()}>
+              Attending
+            </Text>
+          </View>
+        :
+          <View style={style.btn}>
+            <Text style={{ color: "white", fontSize: 18, fontWeight: "bold" }} onPress={() => follow()}>
+              Attend
+            </Text>
+          </View>
+        }
       </View>
     </ScrollView>
   );
@@ -86,4 +133,13 @@ const style = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 10,
   },
+  btnGreen: {
+    height: 55,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 40,
+    backgroundColor: "green",
+    marginHorizontal: 20,
+    borderRadius: 10,
+  }
 });
