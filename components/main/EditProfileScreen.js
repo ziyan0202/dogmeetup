@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useContext, useState } from "react";
 import {
   View,
   Text,
@@ -9,15 +9,39 @@ import {
   TextInput,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import FormButton from "./FormButton";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
 import { Platform } from "react-native-web";
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
+import firebase from "firebase";
+require("firebase/firestore");
 
-const EditProfileScreen = () => {
-  this.sheetRef = React.createRef();
-  fall = new Animated.Value(1);
+const EditProfileScreen = (props) => {
+  const handleUpdate = () => {};
+  const db = firebase.firestore();
+
+  const [user, setUser] = useState(null);
+  const [currentname, SetCurrentname] = useState();
+  useEffect(() => {
+    const sub = db
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .onSnapshot((snapshot) => {
+        SetCurrentname(snapshot.data().name);
+      });
+    return () => sub();
+  }, [firebase.auth().currentUser.uid]);
+
+  db.collection("users")
+    .doc(firebase.auth().currentUser.uid)
+    .onSnapshot((snapshot) => {
+      SetCurrentname(snapshot.data().name);
+    });
+
+  const sheetRef = React.createRef();
+  const fall = new Animated.Value(1);
   const renderInner = () => (
     <View style={styles.panel}>
       <View style={{ alignItems: "center" }}>
@@ -32,7 +56,8 @@ const EditProfileScreen = () => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.panelButton}
-        onPress={() => this.sheetRef.current.snapTo(1)}
+        onPress={() => sheetRef.current.snapTo(1)}
+        // onpress={() =>text()}
       >
         <Text style={styles.panelButtonTitle}>Cancel</Text>
       </TouchableOpacity>
@@ -51,16 +76,25 @@ const EditProfileScreen = () => {
     <View style={styles.container}>
       <BottomSheet
         ref={sheetRef}
-        snapPoints={[300, 0]}
-        renderContent={this.renderInner}
-        renderHeader={this.renderHeader}
+        snapPoints={[350, 0]}
+        renderContent={renderInner}
+        renderHeader={renderHeader}
         initialSnap={1}
-        callbackNode={this.fall}
+        callbackNode={fall}
         enabledGestureInteraction={true}
       />
-      <View style={{ margin: 20 }}>
+      <Animated.View
+        View
+        style={{
+          margin: 20,
+          opacity: Animated.add(0.1, Animated.multiply(fall, 1.0)),
+        }}
+      >
         <View style={{ alignItems: "center" }}>
-          <TouchableOpacity onpress={() => this.sheetRef.current.snapTo(0)}>
+          <TouchableOpacity
+            style={styles.panelButtonTitle}
+            onPress={() => sheetRef.current.snapTo(0)}
+          >
             <View
               style={{
                 height: 100,
@@ -102,12 +136,12 @@ const EditProfileScreen = () => {
             </View>
           </TouchableOpacity>
           <Text style={{ marginTop: 10, fontSize: 18, fontWeight: "bold" }}>
-            Admin
+            {currentname}
           </Text>
           <View style={styles.action}>
             <FontAwesome name="user-o" size={20} />
             <TextInput
-              placeholder="Name"
+              placeholder={currentname}
               placeholderTextColor="#666666"
               autoCorrect={false}
               style={styles.textInput}
@@ -122,21 +156,9 @@ const EditProfileScreen = () => {
               style={styles.textInput}
             />
           </View>
-          {/* <View style={styles.action}>
-            <FontAwesome name="phone" size={20} />
-            <TextInput
-              placeholder="Phone"
-              placeholderTextColor="#666666"
-            keyboardType='number-pad'
-              style={styles.textInput}
-            />
-          </View> */}
-          <TouchableOpacity style={styles.commandButton} onPress={() => {}}>
-            <Text style={styles.panelButtonTitle}>Submit</Text>
-          </TouchableOpacity>
-          {/* <FormButton buttonTitle="Update" onPress={() => {}} /> */}
+          <FormButton buttonTitle="Update" onPress={() => {}} />
         </View>
-      </View>
+      </Animated.View>
     </View>
   );
 };

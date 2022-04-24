@@ -25,17 +25,19 @@ export class Register extends Component {
           .set({
             name,
             email,
+            userImg: null,
+            userAbout: "",
           });
         console.log(result);
       })
-    // firebase
-    // .auth()
-    // .createUserWithEmailAndPassword(email,password)
-    // .then((authUser) => {
-    //   return authUser.user.updateProfile({
-    //     displayName: name
-    //   })
-    // })
+      // firebase
+      // .auth()
+      // .createUserWithEmailAndPassword(email,password)
+      // .then((authUser) => {
+      //   return authUser.user.updateProfile({
+      //     displayName: name
+      //   })
+      // })
 
       .catch((error) => alert(error.message));
   }

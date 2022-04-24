@@ -61,10 +61,9 @@ function Profile(props) {
 
   useEffect(() => {
     const { currentUser, posts } = props;
-    //console.log({ currentUser, posts });
+
     //Trying to access our own profile
 
-    // const f =
     db.collection("following")
       .doc(props.route.params.uid)
       .collection("userFollowing")
@@ -75,7 +74,7 @@ function Profile(props) {
           }))
         );
       });
-    //f();
+
     db.collection("follower")
       .doc(props.route.params.uid)
       .collection("userFollower")
@@ -124,7 +123,6 @@ function Profile(props) {
           setUserPosts(posts);
         });
     }
-    // console.log(userPosts[0])
     if (props.following.indexOf(props.route.params.uid) > -1) {
       setFollowing(true);
     } else {
@@ -194,116 +192,117 @@ function Profile(props) {
   return (
     //style
     <SafeAreaView style={styles.container}>
-      <ImageBackground
-        source={bk}
-        resizeMode="cover"
-        style={styles.imagebackground}
+      <ScrollView
+        style={styles.containerInfo}
+        contentContainerStyle={{
+          justifyContent: "center",
+          alignItems: "center",
+        }}
       >
-        <ScrollView
-          style={styles.containerInfo}
-          contentContainerStyle={{
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Image
-            style={styles.userImg}
-            source={require("../../images/defaultUserImg.png")}
-          />
-          <Text style={styles.userName}>{user.name}</Text>
-          <Text>{user.email}</Text>
-          <Text style={styles.aboutUser}>
-            I'm a WashU student. I like dogs. I have two dogs.
-          </Text>
-          <View style={styles.userBtnWrapper}>
-            {props.route.params.uid !== firebase.auth().currentUser.uid ? (
-              <>
+        <Image
+          style={styles.userImg}
+          source={require("../../images/defaultUserImg.png")}
+        />
+        <Text style={styles.userName}>{user.name}</Text>
+        <Text>{user.email}</Text>
+        <Text style={styles.aboutUser}>
+          I'm a WashU student. I like dogs. I have two dogs.
+        </Text>
+        <View style={styles.userBtnWrapper}>
+          {props.route.params.uid !== firebase.auth().currentUser.uid ? (
+            <>
+              <TouchableOpacity
+                style={styles.userBtn}
+                onPress={() =>
+                  props.navigation.navigate("ChatScreen", {
+                    userName: user.name,
+                    id: props.route.params.uid,
+                    current: firebase.auth().currentUser.uid,
+                  })
+                }
+              >
+                <Text style={styles.userbtnTxt}>Message</Text>
+              </TouchableOpacity>
+              {/* To check if the user is following the profile viewing */}
+              {following ? (
+                <TouchableOpacity
+                  style={styles.followingBtn}
+                  onPress={() => onUnfollow()}
+                >
+                  <Text style={styles.followingTxt}>Following</Text>
+                </TouchableOpacity>
+              ) : (
                 <TouchableOpacity
                   style={styles.userBtn}
-                  onPress={() =>
-                    props.navigation.navigate("ChatScreen", {
-                      userName: user.name,
-                      id: props.route.params.uid,
-                      current: firebase.auth().currentUser.uid,
-                    })
-                  }
+                  onPress={() => onFollow()}
                 >
-                  <Text style={styles.userbtnTxt}>Message</Text>
+                  <Text style={styles.userbtnTxt}>Follow</Text>
                 </TouchableOpacity>
-                {/* To check if the user is following the profile viewing */}
-                {following ? (
-                  <TouchableOpacity
-                    style={styles.followingBtn}
-                    onPress={() => onUnfollow()}
-                  >
-                    <Text style={styles.followingTxt}>Following</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    style={styles.userBtn}
-                    onPress={() => onFollow()}
-                  >
-                    <Text style={styles.userbtnTxt}>Follow</Text>
-                  </TouchableOpacity>
-                )}
-              </>
-            ) : (
-              <>
-                <TouchableOpacity
-                  style={styles.userBtn}
-                  onPress={() => navigation.navigate("EditProfile")}
-                >
-                  <Text style={styles.userbtnTxt}>Edit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.userBtn}
-                  onPress={() => onLogout()}
-                >
-                  <Text style={styles.userbtnTxt}>Logout</Text>
-                </TouchableOpacity>
-              </>
-            )}
+              )}
+            </>
+          ) : (
+            <>
+              <TouchableOpacity
+                style={styles.userBtn}
+                onPress={() =>
+                  navigation.navigate("EditProfile", {
+                    userName: user.name,
+                    id: props.route.params.uid,
+                    current: firebase.auth().currentUser.uid,
+                  })
+                }
+              >
+                <Text style={styles.userbtnTxt}>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.userBtn}
+                onPress={() => onLogout()}
+              >
+                <Text style={styles.userbtnTxt}>Logout</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+
+        <View style={styles.userInfoWrapper}>
+          <View style={styles.userInfoItem}>
+            <Text style={styles.userInfoTitle}>{post_num}</Text>
+
+            <Text style={styles.userInfoSubTitle}>Posts</Text>
           </View>
 
-          <View style={styles.userInfoWrapper}>
-            <View style={styles.userInfoItem}>
-              <Text style={styles.userInfoTitle}>{post_num}</Text>
-
-              <Text style={styles.userInfoSubTitle}>Posts</Text>
-            </View>
-
-            <View style={styles.userInfoItem}>
-              <Text style={styles.userInfoTitle}>{allfollower.length}</Text>
+          <View style={styles.userInfoItem}>
+            <Text style={styles.userInfoTitle}>{allfollower.length}</Text>
+            <Text
+              style={styles.userInfoSubTitle}
+              onPress={() =>
+                navigation.navigate("Followerscreen", {
+                  id: props.route.params.uid,
+                })
+              }
+            >
+              Followers
+            </Text>
+          </View>
+          <View style={styles.userInfoItem}>
+            <Text style={styles.userInfoTitle}>{allfollow.length}</Text>
+            <View>
               <Text
                 style={styles.userInfoSubTitle}
                 onPress={() =>
-                  navigation.navigate("Followerscreen", {
+                  navigation.navigate("Followingscreen", {
                     id: props.route.params.uid,
                   })
                 }
               >
-                Followers
+                Following
               </Text>
             </View>
-            <View style={styles.userInfoItem}>
-              <Text style={styles.userInfoTitle}>{allfollow.length}</Text>
-              <View>
-                <Text
-                  style={styles.userInfoSubTitle}
-                  onPress={() =>
-                    navigation.navigate("Followingscreen", {
-                      id: props.route.params.uid,
-                    })
-                  }
-                >
-                  Following
-                </Text>
-              </View>
-            </View>
           </View>
-          {/* Next is posts */}
+        </View>
+        {/* Next is posts */}
 
-          {/* Old gallery view for user posts (this may be preferable but it wasn't working at the time of comment)
+        {/* Old gallery view for user posts (this may be preferable but it wasn't working at the time of comment)
       <View style={styles.containerGallery}>
         <FlatList
           numColumns={3}
@@ -318,12 +317,11 @@ function Profile(props) {
       </View>
           */}
 
-          <Feed
-            key={props.route.params.uid}
-            targetUser={props.route.params.uid}
-          ></Feed>
-        </ScrollView>
-      </ImageBackground>
+        <Feed
+          key={props.route.params.uid}
+          targetUser={props.route.params.uid}
+        ></Feed>
+      </ScrollView>
     </SafeAreaView>
   );
 }
