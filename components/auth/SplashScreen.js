@@ -1,18 +1,55 @@
-import { StyleSheet, View, Text, Button, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  Image,
+  View,
+  Text,
+  Button,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import React from "react";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import FormButton from "../main/FormButton";
+import * as Animatable from "react-native-animatable";
 
-const SplashScreen = () => {
-  return <View style={styles.container}></View>;
+const SplashScreen = ({ navigation }) => {
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Image
+          source={require("../../images/Logodog.png")}
+          style={styles.logo}
+          resizeMode="stretch"
+        />
+      </View>
+      <Animatable.View animation="fadeInUpBig" style={styles.footer}>
+        <Text style={styles.title}>Find a playdate!</Text>
+        <Text style={styles.text}>Sign in with account</Text>
+
+        <View style={styles.button}>
+          <TouchableOpacity>
+            <FormButton
+              buttonTitle="Get Started"
+              onPress={() => navigation.navigate("Login")}
+            ></FormButton>
+            {/* <Button color="#08d4c4" style={styles.signIn} title="Get Started">
+            <Text style={styles.textSign}>Get Started</Text>
+          </Button> */}
+          </TouchableOpacity>
+        </View>
+      </Animatable.View>
+    </View>
+  );
 };
 export default SplashScreen;
 
 const { height } = Dimensions.get("screen");
-const height_logo = height * 0.28;
+const height_logo = height * 0.5;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "009387",
+    backgroundColor: "#009387",
   },
   header: {
     flex: 2,

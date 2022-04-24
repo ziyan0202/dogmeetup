@@ -8,6 +8,7 @@ import * as firebase from "firebase";
 import "firebase/firestore";
 import RegisterScreen from "./components/auth/Register";
 import LoginScreen from "./components/auth/Login";
+import SplashScreen from "./components/auth/SplashScreen";
 //import redux
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
@@ -77,7 +78,7 @@ export class App extends Component {
           <Stack.Navigator initialRouteName="Landing">
             <Stack.Screen
               name="Landing"
-              component={LandingScreen}
+              component={SplashScreen}
               options={{ headerShown: false }}
             />
             <Stack.Screen name="Register" component={RegisterScreen} />
@@ -346,10 +347,8 @@ export async function getFollowedEvents(follower, pastEvents = false) {
 
 //Same as getEvents, but only pull events that a certain user is following <eb6>
 export async function getCreatedEvents(creator, pastEvents = false) {
-  //grab the list of events 
-  const query = await db
-    .collection("Events")
-    .where("userID","==",creator)
+  //grab the list of events
+  const query = await db.collection("Events").where("userID", "==", creator);
 
   if (pastEvents) {
     //Dig through events that already happened, newest to oldest

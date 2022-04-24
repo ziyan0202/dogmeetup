@@ -205,9 +205,7 @@ function Profile(props) {
         />
         <Text style={styles.userName}>{user.name}</Text>
         <Text>{user.email}</Text>
-        <Text style={styles.aboutUser}>
-          I'm a WashU student. I like dogs. I have two dogs.
-        </Text>
+        <Text style={styles.aboutUser}>{user.userAbout}</Text>
         <View style={styles.userBtnWrapper}>
           {props.route.params.uid !== firebase.auth().currentUser.uid ? (
             <>
