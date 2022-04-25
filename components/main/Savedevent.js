@@ -98,7 +98,6 @@ export default function Feed(props) {
           borderBottomWidth: 0.1,
         }}
       >
-        <Text>Saved Event here</Text>
         {/* View space between posts */}
         <View
           style={{

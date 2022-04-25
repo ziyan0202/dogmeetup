@@ -74,6 +74,11 @@ const Message = (props) => {
       ))
       } 
     </View>
+    {users.indexOf(firebase.auth().currentUser.uid) == -1?
+      <Text style={styles.nomessage}>You have no messages</Text>  
+      :
+      <></>
+    }
     </ScrollView>
   );
 };
@@ -85,6 +90,13 @@ const styles = StyleSheet.create({
        alignItems: 'center',
        paddingLeft:20,
        paddingRight:20,    
+   },
+   nomessage: {
+     color: "#aaaaaa",
+     fontSize: 20,
+     flex:1,
+     paddingTop: 20,
+     alignSelf: "center"
    }
   });
 export default Message;

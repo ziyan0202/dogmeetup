@@ -18,6 +18,7 @@ import FeedScreen from "./main/Feed";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import ProfileScreen from "./main/Profile";
 import SearchScreen from "./main/Search";
+import SavedScreen from "./main/Savedevent";
 import firebase from "firebase";
 import MessageScreen from "./main/MessageScreen";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -67,15 +68,9 @@ export class Main extends Component {
           }}
         />
         <Tab.Screen
-          name="Saved Event"
-          component={EmptyScreen}
-          listeners={({ navigation }) => ({
-            //A user press this tab
-            tabPress: (event) => {
-              event.preventDefault();
-              navigation.navigate("Savedevent");
-            },
-          })}
+          name="Saved Events"
+          component={SavedScreen}
+          navigation={this.props.navigation}
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons
