@@ -42,7 +42,7 @@ export default function Save(props) {
 
   //Upload process
   const uploadImage = async () => {
-    console.log(date);
+    
     const uri = props.route.params.image;
     const response = await fetch(uri);
     const blob = await response.blob();
@@ -73,7 +73,7 @@ export default function Save(props) {
     const uid = firebase.auth().currentUser.uid
     const userName = await getUserName(uid);
 
-    var eventTime = firebase.firestore.Timestamp(date);
+    var eventTime = firebase.firestore.Timestamp.fromDate(date);
     
 
     const eventData = {
