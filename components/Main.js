@@ -20,6 +20,7 @@ import ProfileScreen from "./main/Profile";
 import SearchScreen from "./main/Search";
 import firebase from "firebase";
 import MessageScreen from "./main/MessageScreen";
+import Icon from "react-native-vector-icons/Ionicons";
 
 //To make sure the tab Add can run
 const EmptyScreen = () => {
@@ -43,6 +44,15 @@ export class Main extends Component {
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="home" color={color} size={26} />
             ),
+            headerRight: () => (
+              <Icon.Button
+                name="add-outline"
+                size={25}
+                backgroundColor="#fff"
+                color="#000"
+                onPress={() => this.props.navigation.navigate("Add")}
+              />
+            ),
             unmountOnBlur: true, //To make sure the page has to reload when we navigate around
           }}
         />
@@ -57,18 +67,22 @@ export class Main extends Component {
           }}
         />
         <Tab.Screen
-          name="Post Event"
+          name="Saved Event"
           component={EmptyScreen}
           listeners={({ navigation }) => ({
             //A user press this tab
             tabPress: (event) => {
               event.preventDefault();
-              navigation.navigate("Add");
+              navigation.navigate("Savedevent");
             },
           })}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="plus-box" color={color} size={26} />
+              <MaterialCommunityIcons
+                name="heart-outline"
+                color={color}
+                size={26}
+              />
             ),
           }}
         />

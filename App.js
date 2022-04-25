@@ -18,6 +18,7 @@ import thunk from "redux-thunk";
 
 import MainScreen from "./components/Main";
 import AddScreen from "./components/main/Add";
+import Savedevent from "./components/main/Savedevent";
 import SaveScreen from "./components/main/Save";
 import EditProfileScreen from "./components/main/EditProfileScreen";
 import ChatScreen from "./components/main/ChatScreen";
@@ -105,6 +106,12 @@ export class App extends Component {
               component={AddScreen}
               navigation={this.props.navigation}
             />
+            <Stack.Screen
+              name="Savedevent"
+              component={Savedevent}
+              navigation={this.props.navigation}
+            />
+
             <Stack.Screen
               name="Save"
               component={SaveScreen}
@@ -265,7 +272,7 @@ export async function createEvent(eventData) {
   }*/
   //Make sure the followers array is there
   eventData.followers = [eventData.userID];
-  
+
   //Create the event
   const newEvent = await db.collection("Events").add(eventData);
   //Officially have the creator follow the event
@@ -349,7 +356,10 @@ export async function getFollowedEvents(follower, pastEvents = false) {
 //Same as getEvents, but only pull events that a certain user is following <eb6>
 export async function getCreatedEvents(creator) {
   //grab the list of events
-  const query = await db.collection("Events").where("userID", "==", creator).orderBy("eventTime",desc);
+  const query = await db
+    .collection("Events")
+    .where("userID", "==", creator)
+    .orderBy("eventTime", desc);
 
   //execute
   return query.get().then((snapshot) => {
