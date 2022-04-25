@@ -23,11 +23,6 @@ export default function Feed(props) {
   const [like, setLike] = useState([]);
 
   const _getPosts = async () => {
-    if (props.targetUser == firebase.auth().currentUser.uid){
-      const posts = await getFollowedEvents(props.targetUser);
-      console.log("POSTS(f)")
-      setPosts(posts);
-    }
     if (props.targetUser !== undefined) {
       // console.log(props.targetUser);
       const posts = await getCreatedEvents(props.targetUser);
