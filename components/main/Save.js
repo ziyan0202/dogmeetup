@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View, TextInput, Image, Button } from "react-native";
+import { StyleSheet, Text, View, TextInput, Image, Button } from "react-native";
 import firebase from "firebase";
 import { NavigationContainer } from "@react-navigation/native";
 import { createEvent, getUserName } from "../../App";
@@ -10,7 +10,7 @@ export default function Save(props) {
   const [caption, setCaption] = useState("");
   const [location, setLocation] = useState("");
   const [details, setDetails] = useState("");
-  const [date,setDate] = useState(new Date());
+  const [date,setDate] = useState(new Date(1651239000000));
 
   //Upload process
   const uploadImage = async () => {
@@ -45,14 +45,17 @@ export default function Save(props) {
     const userName = await getUserName(uid);
 
     ///TEMP: set date automatically until date-timePicker works
-    setDate(new Date(1651239000));
+    var time = new Date(1651239000000);
+    setDate(time);
+    var eventTime = firebase.firestore.Timestamp(date);
     ///END TEMP
+    
 
     const eventData = {
       description:details,
       eventName:caption,
       eventLocation: location,
-      eventTime: date,
+      eventTime,
       image: downloadURL,
       userID: uid,
       userName,
