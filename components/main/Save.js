@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, TextInput, Image, Button } from "react-native";
 import firebase from "firebase";
 import { NavigationContainer } from "@react-navigation/native";
 import { createEvent, getUserName } from "../../App";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { TouchableOpacity } from "react-native-gesture-handler";
 require("firebase/firestore");
 require("firebase/firebase-storage");
 
@@ -11,9 +13,36 @@ export default function Save(props) {
   const [location, setLocation] = useState("");
   const [details, setDetails] = useState("");
   const [date,setDate] = useState(new Date(1651239000000));
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+  const [display,setDisplay] = useState("default");
+
+  //Pulled from React Native Time Picker Example: https://reactnativeguides.com/react-native-date-and-time-picker/ 
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShow(Platform.OS === 'ios');
+    setDate(currentDate);
+  };
+
+  const showMode = (currentMode) => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    setDisplay('default');
+    showMode('date');
+  };
+
+  const showTimepicker = () => {
+    setDisplay('spinner');
+    showMode('time');
+  };
+  //End Citation
 
   //Upload process
   const uploadImage = async () => {
+    console.log(date);
     const uri = props.route.params.image;
     const response = await fetch(uri);
     const blob = await response.blob();
@@ -87,9 +116,32 @@ export default function Save(props) {
         onChangeText={(details) => setDetails(details)}
       />
 
-      {/*
-        THIS IS WHERE A DATE TIME PICKER WILL GO
-      */}
+      <View style={styles.pickerContainer}>
+        <View style={styles.textContainer}>
+          <Text style={styles.dateTimePreview}>{date.toLocaleDateString()}</Text> 
+        </View>
+        <TouchableOpacity style={styles.pickerBtn} onPress={showDatepicker}>
+          <Text style={styles.pickerBtnTxt}>Set Date</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.pickerContainer}>
+      <View style={styles.textContainer}>
+          <Text style={styles.dateTimePreview}>{date.toLocaleTimeString()}</Text> 
+        </View>
+        <TouchableOpacity style={styles.pickerBtn} onPress={showTimepicker}>
+          <Text style={styles.pickerBtnTxt}>Set Time</Text>
+        </TouchableOpacity>
+      </View>
+      {show && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={date}
+          mode={mode}
+          is24Hour={true}
+          display = {display}
+          onChange={onChange}
+        />
+      )}
 
       <Button title="Save" onPress={() => uploadImage()} />
     </View>
@@ -104,4 +156,35 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 5,
   },
+  pickerContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    width: "100%",
+    height: 40,
+    marginTop: 10,
+    marginBottom: 5,
+  },
+  pickerBtn: {
+    borderColor: "#2e64e5",
+    borderWidth: 2,
+    borderRadius: 3,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginHorizontal: 5,
+    width:300,
+  },
+  pickerBtnTxt: {
+    color: "#2e64e5",
+    alignItems: "center",
+  },
+  textContainer: {
+    width:100,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    flex:1
+  },
+  dateTimePreview: {
+    fontSize: 20
+  }
 });
