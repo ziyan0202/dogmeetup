@@ -12,7 +12,7 @@ export default function Save(props) {
   const [caption, setCaption] = useState("");
   const [location, setLocation] = useState("");
   const [details, setDetails] = useState("");
-  const [date,setDate] = useState(new Date(1651239000000));
+  const [date,setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
   const [display,setDisplay] = useState("default");
@@ -73,11 +73,7 @@ export default function Save(props) {
     const uid = firebase.auth().currentUser.uid
     const userName = await getUserName(uid);
 
-    ///TEMP: set date automatically until date-timePicker works
-    var time = new Date(1651239000000);
-    setDate(time);
     var eventTime = firebase.firestore.Timestamp(date);
-    ///END TEMP
     
 
     const eventData = {
