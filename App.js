@@ -270,6 +270,7 @@ export async function createEvent(eventData) {
   const newEvent = await db.collection("Events").add(eventData);
   //Officially have the creator follow the event
   await followEvent(firebase.auth().currentUser.uid, newEvent);
+  return;
 }
 
 //Delete an event by ID <eb4>
@@ -346,21 +347,10 @@ export async function getFollowedEvents(follower, pastEvents = false) {
 }
 
 //Same as getEvents, but only pull events that a certain user is following <eb6>
-export async function getCreatedEvents(creator, pastEvents = false) {
+export async function getCreatedEvents(creator) {
   //grab the list of events
-  const query = await db.collection("Events").where("userID", "==", creator);
+  const query = await db.collection("Events").where("userID", "==", creator).orderBy("eventTime",desc);
 
-  if (pastEvents) {
-    //Dig through events that already happened, newest to oldest
-    query = query
-      .where("eventTime", "<", firebase.firestore.Timestamp.now())
-      .orderBy("eventTime", "desc");
-  } else {
-    //Get upcoming events, soonest to farthest out
-    query = query
-      .where("eventTime", ">", firebase.firestore.Timestamp.now())
-      .orderBy("eventTime", "asc");
-  }
   //execute
   return query.get().then((snapshot) => {
     var events = [];
