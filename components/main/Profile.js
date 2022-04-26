@@ -28,6 +28,7 @@ function Profile(props) {
   const [allfollow, SetAllfollow] = useState([]);
   const [allfollower, SetAllfollower] = useState([]);
   const [currentname, SetCurrentname] = useState();
+  const [currentdes, SetDes] = useState();
 
   const db = firebase.firestore();
   useEffect(() => {
@@ -52,6 +53,7 @@ function Profile(props) {
       .doc(firebase.auth().currentUser.uid)
       .onSnapshot((snapshot) => {
         SetCurrentname(snapshot.data().name);
+        SetDes(snapshot.data().userAbout)
       });
     return () => sub();
   }, [firebase.auth().currentUser.uid]);
@@ -203,9 +205,9 @@ function Profile(props) {
           style={styles.userImg}
           source={require("../../images/defaultUserImg.png")}
         />
-        <Text style={styles.userName}>{user.name}</Text>
+        <Text style={styles.userName}>{currentname}</Text>
         <Text>{user.email}</Text>
-        <Text style={styles.aboutUser}>{user.userAbout}</Text>
+        <Text style={styles.aboutUser}>{currentdes}</Text>
         <View style={styles.userBtnWrapper}>
           {props.route.params.uid !== firebase.auth().currentUser.uid ? (
             <>
