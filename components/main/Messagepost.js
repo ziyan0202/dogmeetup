@@ -56,7 +56,7 @@ const Postmessage = ({text,id,user,fromid,to,time,img,prop,fromname,userlist}) =
                 <Text style = {styles.MessageText} 
                 onPress={() =>
                     prop.navigation.navigate("ChatScreen", {
-                        userName: currentemail,
+                        userName: name,
                         id:fromid,
                         current:firebase.auth().currentUser.uid
                     })

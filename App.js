@@ -353,13 +353,13 @@ export async function getFollowedEvents(follower, pastEvents = false) {
   });
 }
 
-//Same as getEvents, but only pull events that a certain user is following <eb6>
+//Same as getEvents, but only pull events that a certain user is created <eb6>
 export async function getCreatedEvents(creator) {
   //grab the list of events
   const query = await db
     .collection("Events")
     .where("userID", "==", creator)
-    .orderBy("eventTime", desc);
+    .orderBy("eventTime", "desc");
 
   //execute
   return query.get().then((snapshot) => {

@@ -12,9 +12,11 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import Feed from "./Feed.js";
+import { getCreatedEvents } from "../../App.js";
 import firebase from "firebase";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
+import { set } from "react-native-reanimated";
 require("firebase/firestore");
 // import {db} from './MessageScreen'
 const bk = require("../../images/bk1.png");
@@ -24,25 +26,21 @@ function Profile(props) {
   const [user, setUser] = useState(null);
   //Whether or not the current user is following the profile viewing
   const [following, setFollowing] = useState(false);
-  const [allpost, SetAllpost] = useState([]);
+  const [post_num, SetPostNum] = useState([]);
   const [allfollow, SetAllfollow] = useState([]);
   const [allfollower, SetAllfollower] = useState([]);
   const [currentname, SetCurrentname] = useState();
 
   const db = firebase.firestore();
+
+  const getPostCount = async () =>{
+    var posts = await getCreatedEvents(props.route.params.uid);
+    console.log(posts);
+    SetPostNum(posts.length);
+  }
+
   useEffect(() => {
-    const subscribe = db
-      .collection("posts")
-      .where("userID", "==", props.route.params.uid)
-      .onSnapshot((snapshot) => {
-        SetAllpost(
-          snapshot.docs.map((doc) => ({
-            id: doc.id,
-            postnameid: doc.data().userID,
-          }))
-        );
-      });
-    return () => subscribe();
+    getPostCount();
   }, []);
 
   //get current user name
@@ -54,11 +52,8 @@ function Profile(props) {
         SetCurrentname(snapshot.data().name);
       });
     return () => sub();
-  }, [firebase.auth().currentUser.uid]);
+  }, []);
   //console.log(firebase.auth().currentUser)
-
-  const post_num = allpost.length;
-
   useEffect(() => {
     const { currentUser, posts } = props;
 
@@ -105,23 +100,6 @@ function Profile(props) {
             console.log("does not exist");
           }
         });
-      firebase
-        .firestore()
-        .collection("posts")
-        .where("userID", "==", props.route.params.uid)
-        .orderBy("timePosted", "asc") //oldest date to most recent date
-        .get()
-        .then((snapshot) => {
-          //iterate through all the docs then build an array the way we want it
-          let posts = snapshot.docs.map((doc) => {
-            const data = doc.data();
-            const id = doc.id;
-
-            return { id, ...data };
-          });
-          //console.log(posts);
-          setUserPosts(posts);
-        });
     }
     if (props.following.indexOf(props.route.params.uid) > -1) {
       setFollowing(true);
@@ -129,7 +107,6 @@ function Profile(props) {
       setFollowing(false);
     }
   }, [props.route.params.uid, props.following, userPosts]); //only when this variable update will do the useEffect
-
   if (user === null) {
     return <View />;
   }
@@ -206,9 +183,8 @@ function Profile(props) {
         <Text style={styles.userName}>{user.name}</Text>
         <Text>{user.email}</Text>
         <Text style={styles.aboutUser}>{user.userAbout}</Text>
-        <View style={styles.userBtnWrapper}>
           {props.route.params.uid !== firebase.auth().currentUser.uid ? (
-            <>
+            <View style={styles.userBtnWrapper}>
               <TouchableOpacity
                 style={styles.userBtn}
                 onPress={() =>
@@ -237,9 +213,9 @@ function Profile(props) {
                   <Text style={styles.userbtnTxt}>Follow</Text>
                 </TouchableOpacity>
               )}
-            </>
+            </View>
           ) : (
-            <>
+            <View style={styles.userBtnWrapper}>
               <TouchableOpacity
                 style={styles.userBtn}
                 onPress={() =>
@@ -258,9 +234,8 @@ function Profile(props) {
               >
                 <Text style={styles.userbtnTxt}>Logout</Text>
               </TouchableOpacity>
-            </>
+            </View>
           )}
-        </View>
 
         <View style={styles.userInfoWrapper}>
           <View style={styles.userInfoItem}>
@@ -318,7 +293,9 @@ function Profile(props) {
         <Feed
           key={props.route.params.uid}
           targetUser={props.route.params.uid}
+          style={{width: "100%"}}
         ></Feed>
+        <View style={styles.bottomSpacer}></View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -338,8 +315,8 @@ const styles = StyleSheet.create({
   containerInfo: {
     // backgroundColor: "#fff",
     //backgroundColor: '#dbfbed',
-    marginRight: 20,
-    padding: 30,
+    padding: 10,
+    flex: 1
   },
   containerGallery: {
     flex: 1,
@@ -411,5 +388,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  bottomSpacer: {
+    height: 20
+  }
 });
 export default connect(mapStateToProps, null)(Profile);
