@@ -27,10 +27,13 @@ const Postmessage = ({text,id,user,fromid,to,time,img,prop,fromname,userlist}) =
 
     const currentemail =firebase.auth().currentUser.email;
 
-    //const nn =firebase.auth().currentUser.displayName;
-    useEffect(() => {
+    const usernamePull = async () =>{
       const username = await getUserName(firebase.auth().currentUser.uid);
       setName(username);
+    }
+    //const nn =firebase.auth().currentUser.displayName;
+    useEffect(() => {
+      usernamePull();
     },[]);
     //console.log()
 
