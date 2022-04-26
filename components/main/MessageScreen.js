@@ -28,7 +28,7 @@ const Message = (props) => {
       var messageArray=[];
       
       snapshot.docs.forEach(doc =>{
-        if(!foundMessage && (doc.data().user.name == currentname || doc.data.user.fromname == currentname)){
+        if(!foundMessage && (doc.data().user.name == currentname || doc.data().user.fromname == currentname)){
           setFoundMessage(true);
         }
         console.log(doc.data());
