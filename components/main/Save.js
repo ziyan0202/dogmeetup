@@ -87,7 +87,7 @@ export default function Save(props) {
     }
 
     createEvent(eventData)
-    .then(function () {
+    .then(value => {
       //will go to beginning route of navigator, return to main page
       props.navigation.popToTop();
     });

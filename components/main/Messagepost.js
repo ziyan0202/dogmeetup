@@ -17,6 +17,7 @@ const Postmessage = ({text,id,user,fromid,to,time,img,prop,fromname,userlist}) =
  const db =firebase.firestore()
  const [userss, SetUserss] =useState([])
  const [test, Settest] =useState(new Set())
+ const [name,setName] = useState();
    
 
      useEffect(() => {
@@ -27,7 +28,10 @@ const Postmessage = ({text,id,user,fromid,to,time,img,prop,fromname,userlist}) =
     const currentemail =firebase.auth().currentUser.email;
 
     //const nn =firebase.auth().currentUser.displayName;
-    const name = getUserName(firebase.auth().currentUser.uid)
+    useEffect(() => {
+      const username = await getUserName(firebase.auth().currentUser.uid);
+      setName(username);
+    },[]);
     //console.log()
 
 

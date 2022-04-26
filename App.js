@@ -277,7 +277,7 @@ export async function createEvent(eventData) {
   const newEvent = await db.collection("Events").add(eventData);
   //Officially have the creator follow the event
   await followEvent(firebase.auth().currentUser.uid, newEvent);
-  return;
+  return true;
 }
 
 //Delete an event by ID <eb4>
