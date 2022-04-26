@@ -24,6 +24,7 @@ const EditProfileScreen = (props) => {
 
   const [user, setUser] = useState(null);
   const [currentname, SetCurrentname] = useState();
+  const [currentDesc,SetCurrentDes] = useState();
   const [namechange, SetNamechange] = useState();
   const [deschange, SetDeschange] = useState();
   useEffect(() => {
@@ -40,6 +41,9 @@ const EditProfileScreen = (props) => {
     .doc(firebase.auth().currentUser.uid)
     .onSnapshot((snapshot) => {
       SetCurrentname(snapshot.data().name);
+      if(snapshot.data().userAbout !== undefined){
+        SetCurrentDes(snapshot.data().userAbout);
+      }
     });
 
   const sheetRef = React.createRef();
@@ -84,10 +88,31 @@ const EditProfileScreen = (props) => {
 
 //submit the change to firebase 
 const submitchange =()=>{
-  db.collection("users")
-  .doc(firebase.auth().currentUser.uid)
-  .update({name:namechange,userAbout:deschange});
 
+  const newData = {};
+  if(namechange !== undefined){
+    newData.name = namechange;
+  }
+  if(deschange !== undefined){
+    newData.userAbout = deschange;
+  }
+
+  if(Object.keys(newData).length > 0){
+    db.collection("users")
+    .doc(firebase.auth().currentUser.uid)
+    .update(newData);
+
+    //Update all events to use the new name
+    db.collection("Events")
+      .where("userID","==",firebase.auth().currentUser.uid)
+      .get()
+      .then(snapshot =>{
+        snapshot.forEach(doc =>{
+          doc.ref.update(newData);
+        })
+      })
+  }
+  
   page();
 }
 const page=()=>{
@@ -175,7 +200,7 @@ const page=()=>{
           <View style={styles.action}>
             <FontAwesome name="user-o" size={20} />
             <TextInput
-              placeholder="About Me"
+              placeholder={currentDesc!==undefined?currentDesc:"About Me"}
               placeholderTextColor="#666666"
               autoCorrect={false}
               style={styles.textInput}
