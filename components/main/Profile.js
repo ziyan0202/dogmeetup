@@ -83,7 +83,15 @@ function Profile(props) {
     //follow
 
     if (props.route.params.uid === firebase.auth().currentUser.uid) {
-      setUser(currentUser);
+      // setUser(currentUser);
+      firebase
+        .firestore()
+        .collection("users")
+        .doc(firebase.auth().currentUser.uid)
+        .get()
+        .then((snapshot) => {
+          setUser(snapshot.data());
+        });
       setUserPosts(posts);
     }
     //firebase call, fetch user and userPosts

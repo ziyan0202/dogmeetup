@@ -24,6 +24,8 @@ const EditProfileScreen = (props) => {
 
   const [user, setUser] = useState(null);
   const [currentname, SetCurrentname] = useState();
+  const [namechange, SetNamechange] = useState();
+  const [deschange, SetDeschange] = useState();
   useEffect(() => {
     const sub = db
       .collection("users")
@@ -71,6 +73,28 @@ const EditProfileScreen = (props) => {
       </View>
     </View>
   );
+  const { navigation } = props;
+  const Changename =(e)=>{
+    SetNamechange(e)
+  }
+
+  const ChangeDesciption =(e)=>{
+    SetDeschange(e)
+  }
+
+//submit the change to firebase 
+const submitchange =()=>{
+  db.collection("users")
+  .doc(firebase.auth().currentUser.uid)
+  .update({name:namechange,userAbout:deschange});
+
+  page();
+}
+const page=()=>{
+  console.log('here')
+  // navigation.navigate("Profile", {
+  // })
+}
 
   return (
     <View style={styles.container}>
@@ -145,6 +169,7 @@ const EditProfileScreen = (props) => {
               placeholderTextColor="#666666"
               autoCorrect={false}
               style={styles.textInput}
+              onChangeText={(text) => Changename(text)}
             />
           </View>
           <View style={styles.action}>
@@ -154,9 +179,10 @@ const EditProfileScreen = (props) => {
               placeholderTextColor="#666666"
               autoCorrect={false}
               style={styles.textInput}
+              onChangeText={(des) => ChangeDesciption(des)}
             />
           </View>
-          <FormButton buttonTitle="Update" onPress={() => {}} />
+          <FormButton buttonTitle="Update" onPress={() => {submitchange()}} />
         </View>
       </Animated.View>
     </View>
