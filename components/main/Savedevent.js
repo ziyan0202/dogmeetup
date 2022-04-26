@@ -87,7 +87,7 @@ export default function Feed(props) {
     else{
       obj.canDelete = false;
     }
-    return(<Event data={obj}></Event>);
+    return(<Event data={obj} navigation={props.navigation}></Event>);
   });
 
   return (

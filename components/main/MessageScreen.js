@@ -13,6 +13,7 @@ const Message = (props) => {
     const[message,SetMessage] = useState([]);
     const[users,SetUsers] = useState([]);
     const[currentname, SetCurrentname] = useState();
+    const[foundMessage, setFoundMessage] = useState(false);
     
     const db =firebase.firestore()
     // const { currentUser} = props;
@@ -27,6 +28,9 @@ const Message = (props) => {
       var messageArray=[];
       
       snapshot.docs.forEach(doc =>{
+        if(!foundMessage && (doc.data().user.name == currentname || doc.data.user.fromname == currentname)){
+          setFoundMessage(true);
+        }
         console.log(doc.data());
         var othername;
         if(doc.data().user.name == currentname){
@@ -74,7 +78,7 @@ const Message = (props) => {
       ))
       } 
     </View>
-    {users.indexOf(firebase.auth().currentUser.uid) == -1?
+    {!foundMessage?
       <Text style={styles.nomessage}>You have no messages</Text>  
       :
       <></>
