@@ -16,6 +16,8 @@ import { Platform } from "react-native-web";
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 import firebase from "firebase";
+import { Camera } from "expo-camera";
+import * as ImagePicker from "expo-image-picker";
 require("firebase/firestore");
 
 const EditProfileScreen = (props) => {
@@ -24,40 +26,72 @@ const EditProfileScreen = (props) => {
 
   const [user, setUser] = useState(null);
   const [currentname, SetCurrentname] = useState();
-  const [currentDesc,SetCurrentDes] = useState();
+  const [currentDesc, SetCurrentDes] = useState();
   const [namechange, SetNamechange] = useState();
   const [deschange, SetDeschange] = useState();
+  const [hasCameraPermission, setHasCameraPermission] = useState(null);
+  const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
+  const [image, setImage] = useState(null);
+  const [camera, setCamera] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
   useEffect(() => {
     const sub = db
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
       .onSnapshot((snapshot) => {
         SetCurrentname(snapshot.data().name);
+        // setImage(snapshot.data().avatar);
       });
     return () => sub();
   }, [firebase.auth().currentUser.uid]);
-
+  const sheetRef = React.createRef();
+  const fall = new Animated.Value(1);
   db.collection("users")
     .doc(firebase.auth().currentUser.uid)
     .onSnapshot((snapshot) => {
       SetCurrentname(snapshot.data().name);
-      if(snapshot.data().userAbout !== undefined){
+      if (snapshot.data().userAbout !== undefined) {
         SetCurrentDes(snapshot.data().userAbout);
       }
     });
 
-  const sheetRef = React.createRef();
-  const fall = new Animated.Value(1);
+  const choosephoto = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+    if (!result.cancelled) {
+      setImage(result.uri);
+    }
+
+    setimge();
+  };
+  const setimge = () => {
+    db.collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .update({ avatar: image });
+
+    console.log("successful upload image!");
+    //  sheetRef.current.snapTo(1)
+  };
+
+  const takephoto = () => {};
+
   const renderInner = () => (
     <View style={styles.panel}>
       <View style={{ alignItems: "center" }}>
         <Text style={styles.panelTitle}>Upload Photo</Text>
         <Text style={styles.panelSubtitle}>Choose Your Profile Picture</Text>
       </View>
-      <TouchableOpacity style={styles.panelButton}>
+      <TouchableOpacity style={styles.panelButton} onPress={() => takephoto()}>
         <Text style={styles.panelButtonTitle}>Take Photo</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.panelButton}>
+      <TouchableOpacity
+        style={styles.panelButton}
+        onPress={() => choosephoto()}
+      >
         <Text style={styles.panelButtonTitle}>Choose From Library</Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -78,48 +112,47 @@ const EditProfileScreen = (props) => {
     </View>
   );
   const { navigation } = props;
-  const Changename =(e)=>{
-    SetNamechange(e)
-  }
+  const Changename = (e) => {
+    SetNamechange(e);
+  };
 
-  const ChangeDesciption =(e)=>{
-    SetDeschange(e)
-  }
+  const ChangeDesciption = (e) => {
+    SetDeschange(e);
+  };
 
-//submit the change to firebase 
-const submitchange =()=>{
+  //submit the change to firebase
+  const submitchange = () => {
+    const newData = {};
+    if (namechange !== undefined) {
+      newData.name = namechange;
+    }
+    if (deschange !== undefined) {
+      newData.userAbout = deschange;
+    }
 
-  const newData = {};
-  if(namechange !== undefined){
-    newData.name = namechange;
-  }
-  if(deschange !== undefined){
-    newData.userAbout = deschange;
-  }
+    if (Object.keys(newData).length > 0) {
+      db.collection("users")
+        .doc(firebase.auth().currentUser.uid)
+        .update(newData);
 
-  if(Object.keys(newData).length > 0){
-    db.collection("users")
-    .doc(firebase.auth().currentUser.uid)
-    .update(newData);
+      //Update all events to use the new name
+      db.collection("Events")
+        .where("userID", "==", firebase.auth().currentUser.uid)
+        .get()
+        .then((snapshot) => {
+          snapshot.forEach((doc) => {
+            doc.ref.update(newData);
+          });
+        });
+    }
 
-    //Update all events to use the new name
-    db.collection("Events")
-      .where("userID","==",firebase.auth().currentUser.uid)
-      .get()
-      .then(snapshot =>{
-        snapshot.forEach(doc =>{
-          doc.ref.update(newData);
-        })
-      })
-  }
-  
-  page();
-}
-const page=()=>{
-  console.log('here')
-  // navigation.navigate("Profile", {
-  // })
-}
+    page();
+  };
+  const page = () => {
+    console.log("here");
+    // navigation.navigate("Profile", {
+    // })
+  };
 
   return (
     <View style={styles.container}>
@@ -156,6 +189,7 @@ const page=()=>{
               <ImageBackground
                 source={{
                   uri: "https://eugeneweekly.com/wp-content/uploads/2020/08/20200820pets-1-lede-1300x844.jpg",
+                  // uri:image
                 }}
                 style={{ height: 100, width: 100 }}
                 imageStyle={{ borderRadius: 15 }}
@@ -200,14 +234,19 @@ const page=()=>{
           <View style={styles.action}>
             <FontAwesome name="user-o" size={20} />
             <TextInput
-              placeholder={currentDesc!==undefined?currentDesc:"About Me"}
+              placeholder={currentDesc !== undefined ? currentDesc : "About Me"}
               placeholderTextColor="#666666"
               autoCorrect={false}
               style={styles.textInput}
               onChangeText={(des) => ChangeDesciption(des)}
             />
           </View>
-          <FormButton buttonTitle="Update" onPress={() => {submitchange()}} />
+          <FormButton
+            buttonTitle="Update"
+            onPress={() => {
+              submitchange();
+            }}
+          />
         </View>
       </Animated.View>
     </View>

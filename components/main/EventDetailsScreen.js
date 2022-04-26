@@ -6,33 +6,35 @@ import {
   StatusBar,
   ImageBackground,
   View,
+  TouchableOpacity,
 } from "react-native";
 import firebase from "firebase";
-import {followEvent, getEvent, unfollowEvent} from "../../App.js";
+import { followEvent, getEvent, unfollowEvent } from "../../App.js";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-
 const EventDetailsScreen = (props) => {
+  const [title, setTitle] = useState("");
+  const [location, setLocation] = useState("");
+  const [description, setDescription] = useState("");
+  const [uid, setUID] = useState("");
+  const [userName, setUserName] = useState("");
+  const [image, setImage] = useState("");
+  const [followers, setFollowers] = useState([]);
 
-  const [title,setTitle] = useState("");
-  const [location,setLocation] = useState("");
-  const [description,setDescription] = useState("");
-  const [uid,setUID] = useState("");
-  const [userName,setUserName] = useState("");
-  const [image,setImage] = useState("");
-  const [followers,setFollowers] = useState([]);
-
-  const  follow = async () => {
-    await followEvent(firebase.auth().currentUser.uid,props.route.params.eid);
+  const follow = async () => {
+    await followEvent(firebase.auth().currentUser.uid, props.route.params.eid);
     _getEvent();
-  }
+  };
 
   const unfollow = async () => {
-    await unfollowEvent(firebase.auth().currentUser.uid,props.route.params.eid);
+    await unfollowEvent(
+      firebase.auth().currentUser.uid,
+      props.route.params.eid
+    );
     _getEvent();
-  }
-  
-  const _getEvent = async () =>{
+  };
+
+  const _getEvent = async () => {
     const data = await getEvent(props.route.params.eid);
     console.log(props.route.params.eid);
     console.log(data);
@@ -43,11 +45,11 @@ const EventDetailsScreen = (props) => {
     setUserName(data.userName);
     setImage(data.image);
     setFollowers(data.followers);
-  }
-  
-  useEffect(()=>{
+  };
+
+  useEffect(() => {
     _getEvent();
-  },[]);
+  }, []);
 
   return (
     <ScrollView
@@ -64,7 +66,7 @@ const EventDetailsScreen = (props) => {
       />
       <ImageBackground
         style={style.headerImage}
-        source={{uri: image}}
+        source={{ uri: image }}
       ></ImageBackground>
       <View>
         {/* view foricon */}
@@ -87,7 +89,9 @@ const EventDetailsScreen = (props) => {
               justifyContent: "space-between",
             }}
           >
-            <Text style={{ fontSize: 13, color: "grey" }}>{followers.length} attending</Text>
+            <Text style={{ fontSize: 13, color: "grey" }}>
+              {followers.length} attending
+            </Text>
           </View>
           <View
             style={{
@@ -97,19 +101,19 @@ const EventDetailsScreen = (props) => {
             <Text style={{ lineHeight: 20, color: "grey" }}>{description}</Text>
           </View>
         </View>
-        {followers.indexOf(firebase.auth().currentUser.uid) != -1?
+        {followers.indexOf(firebase.auth().currentUser.uid) != -1 ? (
           <TouchableOpacity style={style.btnGreen} onPress={() => unfollow()}>
-            <Text style={{ color: "white", fontSize: 18, fontWeight: "bold" }} >
+            <Text style={{ color: "white", fontSize: 18, fontWeight: "bold" }}>
               Attending
             </Text>
           </TouchableOpacity>
-        :
+        ) : (
           <TouchableOpacity style={style.btn} onPress={() => follow()}>
             <Text style={{ color: "white", fontSize: 18, fontWeight: "bold" }}>
               Attend
             </Text>
           </TouchableOpacity>
-        }
+        )}
       </View>
     </ScrollView>
   );
@@ -141,5 +145,5 @@ const style = StyleSheet.create({
     backgroundColor: "green",
     marginHorizontal: 20,
     borderRadius: 10,
-  }
+  },
 });

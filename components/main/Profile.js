@@ -33,11 +33,11 @@ function Profile(props) {
 
   const db = firebase.firestore();
 
-  const getPostCount = async () =>{
+  const getPostCount = async () => {
     var posts = await getCreatedEvents(props.route.params.uid);
     console.log(posts);
     SetPostNum(posts.length);
-  }
+  };
 
   useEffect(() => {
     getPostCount();
@@ -186,64 +186,63 @@ function Profile(props) {
       >
         <Image
           style={styles.userImg}
-          source={require("../../images/defaultUserImg.png")}
+          source={{
+            uri: "https://m.media-amazon.com/images/I/61vexDQktqL._AC_SL1182_.jpg",
+          }}
         />
         <Text style={styles.userName}>{user.name}</Text>
         <Text>{user.email}</Text>
         <Text style={styles.aboutUser}>{user.userAbout}</Text>
-          {props.route.params.uid !== firebase.auth().currentUser.uid ? (
-            <View style={styles.userBtnWrapper}>
+        {props.route.params.uid !== firebase.auth().currentUser.uid ? (
+          <View style={styles.userBtnWrapper}>
+            <TouchableOpacity
+              style={styles.userBtn}
+              onPress={() =>
+                props.navigation.navigate("ChatScreen", {
+                  userName: user.name,
+                  id: props.route.params.uid,
+                  current: firebase.auth().currentUser.uid,
+                })
+              }
+            >
+              <Text style={styles.userbtnTxt}>Message</Text>
+            </TouchableOpacity>
+            {/* To check if the user is following the profile viewing */}
+            {following ? (
+              <TouchableOpacity
+                style={styles.followingBtn}
+                onPress={() => onUnfollow()}
+              >
+                <Text style={styles.followingTxt}>Following</Text>
+              </TouchableOpacity>
+            ) : (
               <TouchableOpacity
                 style={styles.userBtn}
-                onPress={() =>
-                  props.navigation.navigate("ChatScreen", {
-                    userName: user.name,
-                    id: props.route.params.uid,
-                    current: firebase.auth().currentUser.uid,
-                  })
-                }
+                onPress={() => onFollow()}
               >
-                <Text style={styles.userbtnTxt}>Message</Text>
+                <Text style={styles.userbtnTxt}>Follow</Text>
               </TouchableOpacity>
-              {/* To check if the user is following the profile viewing */}
-              {following ? (
-                <TouchableOpacity
-                  style={styles.followingBtn}
-                  onPress={() => onUnfollow()}
-                >
-                  <Text style={styles.followingTxt}>Following</Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  style={styles.userBtn}
-                  onPress={() => onFollow()}
-                >
-                  <Text style={styles.userbtnTxt}>Follow</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          ) : (
-            <View style={styles.userBtnWrapper}>
-              <TouchableOpacity
-                style={styles.userBtn}
-                onPress={() =>
-                  navigation.navigate("EditProfile", {
-                    userName: user.name,
-                    id: props.route.params.uid,
-                    current: firebase.auth().currentUser.uid,
-                  })
-                }
-              >
-                <Text style={styles.userbtnTxt}>Edit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.userBtn}
-                onPress={() => onLogout()}
-              >
-                <Text style={styles.userbtnTxt}>Logout</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+            )}
+          </View>
+        ) : (
+          <View style={styles.userBtnWrapper}>
+            <TouchableOpacity
+              style={styles.userBtn}
+              onPress={() =>
+                navigation.navigate("EditProfile", {
+                  userName: user.name,
+                  id: props.route.params.uid,
+                  current: firebase.auth().currentUser.uid,
+                })
+              }
+            >
+              <Text style={styles.userbtnTxt}>Edit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.userBtn} onPress={() => onLogout()}>
+              <Text style={styles.userbtnTxt}>Logout</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         <View style={styles.userInfoWrapper}>
           <View style={styles.userInfoItem}>
@@ -301,7 +300,7 @@ function Profile(props) {
         <Feed
           key={props.route.params.uid}
           targetUser={props.route.params.uid}
-          style={{width: "100%"}}
+          style={{ width: "100%" }}
         ></Feed>
         <View style={styles.bottomSpacer}></View>
       </ScrollView>
@@ -324,7 +323,7 @@ const styles = StyleSheet.create({
     // backgroundColor: "#fff",
     //backgroundColor: '#dbfbed',
     padding: 10,
-    flex: 1
+    flex: 1,
   },
   containerGallery: {
     flex: 1,
@@ -397,7 +396,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   bottomSpacer: {
-    height: 20
-  }
+    height: 20,
+  },
 });
 export default connect(mapStateToProps, null)(Profile);
