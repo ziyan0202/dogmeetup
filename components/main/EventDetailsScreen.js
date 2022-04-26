@@ -98,17 +98,17 @@ const EventDetailsScreen = (props) => {
           </View>
         </View>
         {followers.indexOf(firebase.auth().currentUser.uid) != -1?
-          <View style={style.btnGreen} onPress={() => unfollow()}>
+          <TouchableOpacity style={style.btnGreen} onPress={() => unfollow()}>
             <Text style={{ color: "white", fontSize: 18, fontWeight: "bold" }} >
               Attending
             </Text>
-          </View>
+          </TouchableOpacity>
         :
-          <View style={style.btn} onPress={() => follow()}>
+          <TouchableOpacity style={style.btn} onPress={() => follow()}>
             <Text style={{ color: "white", fontSize: 18, fontWeight: "bold" }}>
               Attend
             </Text>
-          </View>
+          </TouchableOpacity>
         }
       </View>
     </ScrollView>
