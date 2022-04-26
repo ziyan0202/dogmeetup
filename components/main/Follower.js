@@ -1,4 +1,4 @@
-import {View, Text,StyleSheet,TouchableOpacity,TextInput,Button} from 'react-native';
+import {ImageBackground,Container,View, Text,StyleSheet,ScrollView,SafeAreaView,Button,Image,FlatList} from 'react-native';
 import React, { useEffect, useState,useCallback } from "react";
 import * as firebase from "firebase";
 import "firebase/firestore";
@@ -20,17 +20,24 @@ const Follower = (props) => {
    return  ()=>list();
   }, []);
 
- 
+  const img = { uri: "https://reactjs.org/logo-og.png" };
   return (
     followlist.map (({follower_id,name})=>(
-      <View style={styles.text} >
-        <Text onPress={() =>
+      <SafeAreaView style={styles.container}>  
+       
+        <View style = {styles.ImgWrapper}>
+        <Image
+          style={styles.userImg}
+          source={require("../../images/Avatar.png")}
+          /></View>
+      {/* <View style={styles.text} > */}
+        <Text style={styles.text} onPress={() =>
         props.navigation.navigate("Profile", {
            uid: follower_id,
         })
         
       }>{name}</Text>
-      </View>
+      </SafeAreaView>   
       
     ))
   );
@@ -39,7 +46,26 @@ const Follower = (props) => {
 const styles = StyleSheet.create({
   text:{
     paddingBottom:10
-  }
+  },
+  container:{
+    marginBottom:20,
+    display:"flex",
+    flexDirection:'row',
+    alignItems: 'center',
+  },
+  ImgWrapper: {
+    paddingTop: 15,
+    paddingBottom:10,
+   },
+   userImg:{ 
+      width: 50,
+      height:50,
+      borderRadius:25,  
+      marginLeft:10,
+   },
+   text:{
+     marginLeft:10,
+   }
  
 });
 

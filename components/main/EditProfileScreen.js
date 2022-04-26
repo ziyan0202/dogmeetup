@@ -73,7 +73,7 @@ const EditProfileScreen = (props) => {
       </View>
     </View>
   );
-
+  const { navigation } = props;
   const Changename =(e)=>{
     SetNamechange(e)
   }
@@ -81,12 +81,19 @@ const EditProfileScreen = (props) => {
   const ChangeDesciption =(e)=>{
     SetDeschange(e)
   }
-  
+
 //submit the change to firebase 
 const submitchange =()=>{
   db.collection("users")
   .doc(firebase.auth().currentUser.uid)
-  .update({name:namechange,userAbout:deschange})
+  .update({name:namechange,userAbout:deschange});
+
+  page();
+}
+const page=()=>{
+  console.log('here')
+  // navigation.navigate("Profile", {
+  // })
 }
 
   return (
