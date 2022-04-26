@@ -32,7 +32,7 @@ export default function Event(props){
   }
 
   const toChat = () => {
-    prop.navigation.navigate("ChatScreen", {
+    props.navigation.navigate("ChatScreen", {
       userName: data.userName,
       id:data.userID,
       current:firebase.auth().currentUser.uid
